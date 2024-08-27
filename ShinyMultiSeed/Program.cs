@@ -7,7 +7,8 @@ namespace ShinyMultiSeed
         [STAThread]
         static void Main()
         {
-            using (var presenter = new MainFormPresenter())
+			ApplicationConfiguration.Initialize();
+			using (var presenter = new MainFormPresenter())
             {
                 presenter.Run();
             }

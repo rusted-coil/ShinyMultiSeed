@@ -16,7 +16,7 @@ namespace ShinyMultiSeed.Main
 
         public void Run()
         {
-            Test();
+//            Test();
             Application.Run(m_MainForm);
         }
 
@@ -25,6 +25,7 @@ namespace ShinyMultiSeed.Main
             m_Disposables.Dispose();
         }
 
+        /*
         void Test()
         {
             using (var sw = new StreamWriter("output.txt"))
@@ -122,5 +123,6 @@ namespace ShinyMultiSeed.Main
             };
             System.Diagnostics.Process.Start(startInfo);
         }
+        */
     }
 }
