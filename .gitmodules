@@ -1,0 +1,6 @@
+[submodule "FormRx"]
+	path = FormRx
+	url = https://github.com/rusted-coil/FormRx.git
+[submodule "Gen4RNGLib"]
+	path = Gen4RNGLib
+	url = https://github.com/rusted-coil/Gen4RNGLib.git

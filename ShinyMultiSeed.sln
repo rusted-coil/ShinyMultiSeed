@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinyMultiSeed", "ShinyMultiSeed\ShinyMultiSeed.csproj", "{D21BCE19-27EC-4986-A4AE-102782A1B223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShinyMultiSeed", "ShinyMultiSeed\ShinyMultiSeed.csproj", "{D21BCE19-27EC-4986-A4AE-102782A1B223}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormRx", "FormRx\FormRx.csproj", "{AE627042-0B92-41D7-92E1-6CC25CA1B94D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gen4RNGLib", "Gen4RNGLib\Gen4RNGLib.csproj", "{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{D21BCE19-27EC-4986-A4AE-102782A1B223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D21BCE19-27EC-4986-A4AE-102782A1B223}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D21BCE19-27EC-4986-A4AE-102782A1B223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE627042-0B92-41D7-92E1-6CC25CA1B94D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE627042-0B92-41D7-92E1-6CC25CA1B94D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE627042-0B92-41D7-92E1-6CC25CA1B94D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE627042-0B92-41D7-92E1-6CC25CA1B94D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
