@@ -1,6 +1,6 @@
-﻿using Gen4RngLib.Rng;
+﻿using Gen4RngLib.Individual;
+using Gen4RngLib.Rng;
 using ShinyMultiSeed.Calculator;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 
@@ -18,7 +18,7 @@ namespace ShinyMultiSeed.Main
 
         public void Run()
         {
-            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(new Gen4SeedCalculatorArgs
+            var args = new Gen4SeedCalculatorArgs
             {
                 FrameMin = 900,
                 FrameMax = 4500,
@@ -34,7 +34,8 @@ namespace ShinyMultiSeed.Main
                 FiltersSpdIV = true,
                 SpdIVMin = 0,
                 SpdIVMax = 1,
-            });
+            };
+            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(args);
 
             var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
             stopwatch.Start();
@@ -43,34 +44,27 @@ namespace ShinyMultiSeed.Main
 
             stopwatch.Stop();
 
-            var sortedResults = calculator.Results.OrderBy(pair => pair.InitialSeed).ToList();
+            var sortedResults = calculator.Results.OrderBy(result => result.InitialSeed).ToList();
             using (var sw = new StreamWriter("output.txt"))
             {
-                uint tsv = (24485 ^ 59064) & 0xfff8;
                 var tempRng = RngFactory.CreateLcgRng(0);
+                Individual individual = new Individual();
                 foreach (var result in sortedResults)
                 {
                     var rng = RngFactory.CreateLcgRng(result.InitialSeed);
-                    uint pid1 = rng.Next();
                     uint nature = 0;
-                    for (int i = 1; i <= 450; ++i)
-                    { 
-                        uint pid2 = rng.Next();
-                        var psv = (pid1 ^ pid2) & 0xfff8;
-                        if (tsv == psv)
-                        {
-                            tempRng.Seed = rng.Seed;
-
-                            // 個体値チェック
-                            if (((tempRng.Next() >> 5) & 0b11111) <= 1 // A0
-                                && ((tempRng.Next()) & 0b11111) <= 1) // S0
-                            {
-                                nature = (pid2 << 16 | pid1) % 25;
-                                break;
-                            }
-                        }
-
-                        pid1 = pid2;
+                    for (int i = 0; i < result.StartPosition + args.EncountOffset; ++i)
+                    {
+                        rng.Next();
+                    }
+                    if (args.DeterminesNature)
+                    {
+                        nature = rng.DetermineNature(Gen4RngLib.GameVersion.HGSS, result.SynchroNature);
+                    }
+                    else
+                    {
+                        rng.GenerateIndividual(-1, individual);
+                        nature = individual.GetNature();
                     }
                     sw.WriteLine($"{result.InitialSeed:X8},{result.StartPosition},{nature}");
                 }

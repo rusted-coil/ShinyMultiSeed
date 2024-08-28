@@ -1,6 +1,29 @@
 ﻿namespace ShinyMultiSeed.Calculator
 {
     /// <summary>
+    /// 初期seedカリキュレータ一つの結果を取得するインターフェースです。
+    /// </summary>
+    /// <typeparam name="SeedType">扱うseedの型</typeparam>
+    public interface ISeedCalculatorResult<SeedType>
+    {
+        /// <summary>
+        /// 初期seedの値を取得します。
+        /// </summary>
+        SeedType InitialSeed { get; }
+
+        /// <summary>
+        /// 個体生成を開始する消費数を取得します。
+        /// </summary>
+        uint StartPosition { get; }
+
+        /// <summary>
+        /// シンクロを使用する場合の性格を取得します。
+        /// <para> * シンクロを使用しない、あるいはシンクロ不可の場合、-1を返します。</para>
+        /// </summary>
+        int SynchroNature { get; }
+    }
+
+    /// <summary>
     /// 初期seedを計算するカリキュレータのインターフェースです。
     /// </summary>
     /// <typeparam name="SeedType">扱うseedの型</typeparam>
@@ -8,9 +31,8 @@
     {
         /// <summary>
         /// 計算結果を取得します。
-        /// <para> * 目的に合致する初期seedと、その初期seedからの消費数の組の列挙子を返します。</para>
         /// </summary>
-        IEnumerable<(SeedType InitialSeed, uint StartPosition)> Results { get; }
+        IEnumerable<ISeedCalculatorResult<SeedType>> Results { get; }
 
         /// <summary>
         /// 計算結果をクリアします。

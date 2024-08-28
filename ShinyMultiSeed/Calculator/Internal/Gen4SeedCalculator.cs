@@ -5,8 +5,23 @@ namespace ShinyMultiSeed.Calculator.Internal
 {
     internal sealed class Gen4SeedCalculator : ISeedCalculator<uint>
     {
-        ConcurrentBag<(uint InitialSeed, uint StartPosition)> m_Results = new ConcurrentBag<(uint, uint)>();
-        public IEnumerable<(uint InitialSeed, uint StartPosition)> Results => m_Results;
+        class Result : ISeedCalculatorResult<uint>
+        {
+            public uint InitialSeed { get; set; }
+            public uint StartPosition { get; set; }
+            public int SynchroNature { get; set; }
+
+            public Result() { }
+            public Result(ISeedCalculatorResult<uint> source)
+            {
+                InitialSeed = source.InitialSeed;
+                StartPosition = source.StartPosition;
+                SynchroNature = source.SynchroNature;
+            }
+        }
+
+        ConcurrentBag<ISeedCalculatorResult<uint>> m_Results = new ConcurrentBag<ISeedCalculatorResult<uint>>();
+        public IEnumerable<ISeedCalculatorResult<uint>> Results => m_Results;
 
         // 高速化のため、マルチスレッド内の処理から参照するパラメータはreadonlyなフィールドに値をコピーする
         readonly uint m_FrameMin;
@@ -67,14 +82,17 @@ namespace ShinyMultiSeed.Calculator.Internal
             var tempRng = RngFactory.CreateLcgRng(0);
             var reverseRng = RngFactory.CreateReverseLcgRng(0);
 
-            (uint Seed, uint Position)? evenCandidate = null;
-            (uint Seed, uint Position)? oddCandidate = null;
+            int evenCandidateCount = 0;
+            Result[] evenCandidates = [new Result()];
+            int oddCandidateCount = 0;
+            Result[] oddCandidates = [new Result()];
+
             for (uint upper = partIndex; upper <= 0xff; upper += partCount)
             {
                 for (uint hour = 0; hour <= 23; ++hour)
                 {
-                    evenCandidate = null;
-                    oddCandidate = null;
+                    evenCandidateCount = 0;
+                    oddCandidateCount = 0;
                     for(uint frame = m_FrameMin; frame <= m_FrameMax; ++frame)
                     {
                         uint initialSeed = upper << 24 | hour << 16 | frame;
@@ -82,6 +100,7 @@ namespace ShinyMultiSeed.Calculator.Internal
 
                         bool isOk = false;
                         uint startPosition = 0;
+                        int synchroNature = -1;
 
                         // mainRngから最初に出てくるのはr[0]
                         // 検索したいのはr[PositionMin]以降に生成される性格値
@@ -139,12 +158,14 @@ namespace ShinyMultiSeed.Calculator.Internal
                                         // OK確定
                                         isOk = true;
                                         startPosition = (uint)(a + 1);
+                                        synchroNature = (int)nature;
                                     }
                                     else if (rand % 25 == nature) // 性格ロール成功
                                     {
                                         // OK確定
                                         isOk = true;
                                         startPosition = (uint)(a + 1);
+                                        synchroNature = -1;
                                     }
                                     uint targetPid = (rand << 16 | reverseRng.Next()); // r[a]が生成する性格値
                                     if (targetPid % 25 == nature) // 同じ性格が出てしまった
@@ -168,28 +189,50 @@ namespace ShinyMultiSeed.Calculator.Internal
                             startPosition -= m_EncountOffset;
                             if (frame % 2 == 0)
                             {
-                                if (evenCandidate == null)
+                                if (evenCandidateCount == evenCandidates.Length)
                                 {
-                                    evenCandidate = (initialSeed, startPosition);
+                                    for (int i = 0; i < evenCandidates.Length; ++i)
+                                    {
+                                        m_Results.Add(new Result(evenCandidates[i]));
+                                    }
+                                    m_Results.Add(new Result
+                                    {
+                                        InitialSeed = initialSeed,
+                                        StartPosition = startPosition,
+                                        SynchroNature = synchroNature,
+                                    });
+                                    evenCandidateCount = 0;
                                 }
                                 else
                                 {
-                                    m_Results.Add((evenCandidate.Value.Seed, evenCandidate.Value.Position));
-                                    m_Results.Add((initialSeed, startPosition));
-                                    evenCandidate = (initialSeed, startPosition);
+                                    evenCandidates[evenCandidateCount].InitialSeed = initialSeed;
+                                    evenCandidates[evenCandidateCount].StartPosition = startPosition;
+                                    evenCandidates[evenCandidateCount].SynchroNature = synchroNature;
+                                    evenCandidateCount++;
                                 }
                             }
                             else
                             {
-                                if (oddCandidate == null)
+                                if (oddCandidateCount == oddCandidates.Length)
                                 {
-                                    oddCandidate = (initialSeed, startPosition);
+                                    for (int i = 0; i < oddCandidates.Length; ++i)
+                                    {
+                                        m_Results.Add(new Result(oddCandidates[i]));
+                                    }
+                                    m_Results.Add(new Result
+                                    {
+                                        InitialSeed = initialSeed,
+                                        StartPosition = startPosition,
+                                        SynchroNature = synchroNature,
+                                    });
+                                    oddCandidateCount = 0;
                                 }
                                 else
                                 {
-                                    m_Results.Add((oddCandidate.Value.Seed, oddCandidate.Value.Position));
-                                    m_Results.Add((initialSeed, startPosition));
-                                    oddCandidate = (initialSeed, startPosition);
+                                    oddCandidates[oddCandidateCount].InitialSeed = initialSeed;
+                                    oddCandidates[oddCandidateCount].StartPosition = startPosition;
+                                    oddCandidates[oddCandidateCount].SynchroNature = synchroNature;
+                                    oddCandidateCount++;
                                 }
                             }
                         }
@@ -197,11 +240,11 @@ namespace ShinyMultiSeed.Calculator.Internal
                         {
                             if (frame % 2 == 0)
                             {
-                                evenCandidate = null;
+                                evenCandidateCount = 0;
                             }
                             else
                             {
-                                oddCandidate = null;
+                                oddCandidateCount = 0;
                             }
                         }
                     }
