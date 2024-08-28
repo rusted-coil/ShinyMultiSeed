@@ -1,5 +1,6 @@
-﻿using Gen4RngLib.Individual;
-using Gen4RngLib.Rng;
+﻿using Gen4RngLib.Rng;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 
 namespace ShinyMultiSeed.Main
@@ -16,7 +17,32 @@ namespace ShinyMultiSeed.Main
 
         public void Run()
         {
-//            Test();
+            var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
+            stopwatch.Start();
+
+            int threadCount = 16;
+            var results = Test(threadCount);
+
+            stopwatch.Stop();
+
+            var sortedResults = results.OrderBy(seed => seed).ToList();
+            using (var sw = new StreamWriter("output.txt"))
+            {
+                foreach (var seed in sortedResults)
+                {
+                    sw.WriteLine($"{seed:X8},{seed + 2:X8}");
+                }
+            }
+            var startInfo = new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = "output.txt",
+                UseShellExecute = true,
+                CreateNoWindow = true,
+            };
+            System.Diagnostics.Process.Start(startInfo);
+
+            MessageBox.Show($"処理時間: {stopwatch.Elapsed.TotalSeconds:F2} 秒");
+
             Application.Run(m_MainForm);
         }
 
@@ -25,40 +51,42 @@ namespace ShinyMultiSeed.Main
             m_Disposables.Dispose();
         }
 
-        /*
-        void Test()
+        IEnumerable<uint> Test(int threadCount)
         {
-            using (var sw = new StreamWriter("output.txt"))
+            uint tsv = (24485 ^ 59064) & 0xfff8;
+
+            var results = new ConcurrentBag<uint>();
+
+            Parallel.For(0, threadCount, new ParallelOptions { MaxDegreeOfParallelism = threadCount }, threadIndex =>
             {
-                uint tsv = (24485 ^ 59064) & 0xfff8;
                 var rng = RngFactory.CreateLcgRng(0);
                 var tempRng = RngFactory.CreateLcgRng(0);
                 var reverseRng = RngFactory.CreateReverseLcgRng(0);
-                var individual = new Individual();
-                var initialSeedCandidates = new List<uint>();
-                for (uint upper = 0; upper <= 0xff; ++upper)
+                var frameSet = new HashSet<uint>();
+
+                for (uint upper = (uint)threadIndex; upper <= 0xff; upper += (uint)threadCount)
                 {
                     for (uint hour = 0; hour <= 23; ++hour)
                     {
-                        var frameSet = new HashSet<uint>();
+                        frameSet.Clear();
                         for (uint frame = 900; frame <= 1500; ++frame)
                         {
                             uint initialSeed = upper << 24 | hour << 16 | frame;
                             rng.Seed = initialSeed;
 
-                            uint pid1, pid2;
-                            pid1 = rng.Next(); // r[0]
+                            uint pid1 = rng.Next(); // r[0]
                             for (int i = 1; i <= 150; ++i)
                             {
-                                pid2 = rng.Next(); // r[i]
-
+                                uint pid2 = rng.Next(); // r[i]
                                 var psv = (pid1 ^ pid2) & 0xfff8;
+
                                 if (tsv == psv) // r[i-1]が色違い性格値生成位置
                                 {
                                     tempRng.Seed = rng.Seed;
+
                                     // 個体値チェック
-                                    if (((tempRng.Next() >> 5) & 0b11111) <= 1 // A0
-                                        && ((tempRng.Next()) & 0b11111) <= 1) // S0
+//                                    if (((tempRng.Next() >> 5) & 0b11111) <= 1 // A0
+//                                        && ((tempRng.Next()) & 0b11111) <= 1) // S0
                                     {
                                         uint nature = (pid2 << 16 | pid1) % 25;
 
@@ -102,7 +130,7 @@ namespace ShinyMultiSeed.Main
                                             frameSet.Add(frame);
                                             if (frameSet.Contains(frame - 2))
                                             {
-                                                sw.WriteLine($"{initialSeed - 2:X8},{initialSeed:X8}");
+                                                results.Add(initialSeed - 2);
                                             }
                                             break;
                                         }
@@ -114,15 +142,9 @@ namespace ShinyMultiSeed.Main
                         }
                     }
                 }
-            }
-            var startInfo = new System.Diagnostics.ProcessStartInfo()
-            {
-                FileName = "output.txt",
-                UseShellExecute = true,
-                CreateNoWindow = true,
-            };
-            System.Diagnostics.Process.Start(startInfo);
+            });
+
+            return results;
         }
-        */
     }
 }
