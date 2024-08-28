@@ -14,9 +14,20 @@ namespace ShinyMultiSeed.Main
         public MainFormPresenter()
         { 
             m_MainForm = new MainForm();
+            m_Disposables.Add(m_MainForm.CalculateButton.Clicked.Subscribe(_ => Calculate()));
         }
 
         public void Run()
+        {
+            Application.Run(m_MainForm);
+        }
+
+        public void Dispose()
+        {
+            m_Disposables.Dispose();
+        }
+
+        void Calculate()
         {
             var args = new Gen4SeedCalculatorArgs
             {
@@ -34,6 +45,7 @@ namespace ShinyMultiSeed.Main
                 FiltersSpdIV = true,
                 SpdIVMin = 0,
                 SpdIVMax = 1,
+                UsesSynchro = true,
             };
             var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(args);
 
@@ -69,22 +81,15 @@ namespace ShinyMultiSeed.Main
                     sw.WriteLine($"{result.InitialSeed:X8},{result.StartPosition},{nature}");
                 }
             }
-            var startInfo = new System.Diagnostics.ProcessStartInfo()
+            var startInfo = new ProcessStartInfo()
             {
                 FileName = "output.txt",
                 UseShellExecute = true,
                 CreateNoWindow = true,
             };
-            System.Diagnostics.Process.Start(startInfo);
+            Process.Start(startInfo);
 
             MessageBox.Show($"処理時間: {stopwatch.Elapsed.TotalSeconds:F2} 秒");
-
-            Application.Run(m_MainForm);
-        }
-
-        public void Dispose()
-        {
-            m_Disposables.Dispose();
         }
     }
 }

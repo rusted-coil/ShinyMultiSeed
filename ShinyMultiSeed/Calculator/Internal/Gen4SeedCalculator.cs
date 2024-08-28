@@ -24,12 +24,13 @@ namespace ShinyMultiSeed.Calculator.Internal
         public IEnumerable<ISeedCalculatorResult<uint>> Results => m_Results;
 
         // 高速化のため、マルチスレッド内の処理から参照するパラメータはreadonlyなフィールドに値をコピーする
+        readonly bool m_isHgss;
+        readonly uint m_EncountOffset;
+        readonly bool m_DeterminesNature;
         readonly uint m_FrameMin;
         readonly uint m_FrameMax;
         readonly uint m_PositionMin;
         readonly uint m_PositionMax;
-        readonly uint m_EncountOffset;
-        readonly bool m_DeterminesNature;
         readonly bool m_isShiny;
         readonly uint m_Tsv;
         readonly bool m_FiltersAtkIV;
@@ -38,15 +39,17 @@ namespace ShinyMultiSeed.Calculator.Internal
         readonly bool m_FiltersSpdIV;
         readonly uint m_SpdIVMin;
         readonly uint m_SpdIVMax;
+        readonly bool m_UsesSynchro;
 
         public Gen4SeedCalculator(Gen4SeedCalculatorArgs args)
         {
+            m_isHgss = args.IsHgss;
+            m_EncountOffset = args.EncountOffset;
+            m_DeterminesNature = args.DeterminesNature;
             m_FrameMin = args.FrameMin;
             m_FrameMax = args.FrameMax;
             m_PositionMin = args.PositionMin;
             m_PositionMax = args.PositionMax;
-            m_EncountOffset = args.EncountOffset;
-            m_DeterminesNature = args.DeterminesNature;
             m_isShiny = args.IsShiny;
             m_Tsv = args.Tsv;
             m_FiltersAtkIV = args.FiltersAtkIV;
@@ -55,6 +58,7 @@ namespace ShinyMultiSeed.Calculator.Internal
             m_FiltersSpdIV = args.FiltersSpdIV;
             m_SpdIVMin = args.SpdIVMin;
             m_SpdIVMax = args.SpdIVMax;
+            m_UsesSynchro = args.UsesSynchro;
         }
 
         public void Clear()
@@ -153,20 +157,21 @@ namespace ShinyMultiSeed.Calculator.Internal
                                 for (int a = (int)i - 2; a >= m_EncountOffset; a -= 2)
                                 {
                                     uint rand = reverseRng.Next(); // r[a+1]
-                                    if (rand % 2 == 0) // シンクロ成功
+                                    if ((m_isHgss && rand % 25 == nature)
+                                        || (!m_isHgss && rand / 0xa3e == nature))// 素の性格ロール成功
                                     {
-                                        // OK確定
-                                        isOk = true;
-                                        startPosition = (uint)(a + 1);
-                                        synchroNature = (int)nature;
-                                    }
-                                    else if (rand % 25 == nature) // 性格ロール成功
-                                    {
-                                        // OK確定
                                         isOk = true;
                                         startPosition = (uint)(a + 1);
                                         synchroNature = -1;
                                     }
+                                    else if (m_UsesSynchro 
+                                        && ((m_isHgss && rand % 2 == 0) || (!m_isHgss && (rand & 0x8000) == 0))) // シンクロ成功
+                                    {
+                                        isOk = true;
+                                        startPosition = (uint)(a + 1);
+                                        synchroNature = (int)nature;
+                                    }
+
                                     uint targetPid = (rand << 16 | reverseRng.Next()); // r[a]が生成する性格値
                                     if (targetPid % 25 == nature) // 同じ性格が出てしまった
                                     {
