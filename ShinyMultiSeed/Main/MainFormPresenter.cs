@@ -29,24 +29,7 @@ namespace ShinyMultiSeed.Main
 
         void Calculate()
         {
-            var args = new Gen4SeedCalculatorArgs
-            {
-                FrameMin = 900,
-                FrameMax = 4500,
-                PositionMin = 0,
-                PositionMax = 450,
-                EncountOffset = 0,
-                DeterminesNature = true,
-                IsShiny = true,
-                Tsv = (24485 ^ 59064) & 0xfff8,
-                FiltersAtkIV = true,
-                AtkIVMin = 0,
-                AtkIVMax = 1,
-                FiltersSpdIV = true,
-                SpdIVMin = 0,
-                SpdIVMax = 1,
-                UsesSynchro = true,
-            };
+            var args = m_MainForm.GetGen4SeedCalculatorArgs();
             var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(args);
 
             var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
