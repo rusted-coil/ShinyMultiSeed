@@ -1,4 +1,5 @@
 ﻿using Gen4RngLib.Rng;
+using ShinyMultiSeed.Calculator;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reactive.Disposables;
@@ -17,20 +18,61 @@ namespace ShinyMultiSeed.Main
 
         public void Run()
         {
+            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(new Gen4SeedCalculatorArgs
+            {
+                FrameMin = 900,
+                FrameMax = 4500,
+                PositionMin = 0,
+                PositionMax = 450,
+                EncountOffset = 0,
+                DeterminesNature = true,
+                IsShiny = true,
+                Tsv = (24485 ^ 59064) & 0xfff8,
+                FiltersAtkIV = true,
+                AtkIVMin = 0,
+                AtkIVMax = 1,
+                FiltersSpdIV = true,
+                SpdIVMin = 0,
+                SpdIVMax = 1,
+            });
+
             var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
             stopwatch.Start();
 
-            int threadCount = 16;
-            var results = Test(threadCount);
+            calculator.CalculateAll(16);
 
             stopwatch.Stop();
 
-            var sortedResults = results.OrderBy(seed => seed).ToList();
+            var sortedResults = calculator.Results.OrderBy(pair => pair.InitialSeed).ToList();
             using (var sw = new StreamWriter("output.txt"))
             {
-                foreach (var seed in sortedResults)
+                uint tsv = (24485 ^ 59064) & 0xfff8;
+                var tempRng = RngFactory.CreateLcgRng(0);
+                foreach (var result in sortedResults)
                 {
-                    sw.WriteLine($"{seed:X8},{seed + 2:X8}");
+                    var rng = RngFactory.CreateLcgRng(result.InitialSeed);
+                    uint pid1 = rng.Next();
+                    uint nature = 0;
+                    for (int i = 1; i <= 450; ++i)
+                    { 
+                        uint pid2 = rng.Next();
+                        var psv = (pid1 ^ pid2) & 0xfff8;
+                        if (tsv == psv)
+                        {
+                            tempRng.Seed = rng.Seed;
+
+                            // 個体値チェック
+                            if (((tempRng.Next() >> 5) & 0b11111) <= 1 // A0
+                                && ((tempRng.Next()) & 0b11111) <= 1) // S0
+                            {
+                                nature = (pid2 << 16 | pid1) % 25;
+                                break;
+                            }
+                        }
+
+                        pid1 = pid2;
+                    }
+                    sw.WriteLine($"{result.InitialSeed:X8},{result.StartPosition},{nature}");
                 }
             }
             var startInfo = new System.Diagnostics.ProcessStartInfo()
@@ -49,102 +91,6 @@ namespace ShinyMultiSeed.Main
         public void Dispose()
         {
             m_Disposables.Dispose();
-        }
-
-        IEnumerable<uint> Test(int threadCount)
-        {
-            uint tsv = (24485 ^ 59064) & 0xfff8;
-
-            var results = new ConcurrentBag<uint>();
-
-            Parallel.For(0, threadCount, new ParallelOptions { MaxDegreeOfParallelism = threadCount }, threadIndex =>
-            {
-                var rng = RngFactory.CreateLcgRng(0);
-                var tempRng = RngFactory.CreateLcgRng(0);
-                var reverseRng = RngFactory.CreateReverseLcgRng(0);
-                var frameSet = new HashSet<uint>();
-
-                for (uint upper = (uint)threadIndex; upper <= 0xff; upper += (uint)threadCount)
-                {
-                    for (uint hour = 0; hour <= 23; ++hour)
-                    {
-                        frameSet.Clear();
-                        for (uint frame = 900; frame <= 1500; ++frame)
-                        {
-                            uint initialSeed = upper << 24 | hour << 16 | frame;
-                            rng.Seed = initialSeed;
-
-                            uint pid1 = rng.Next(); // r[0]
-                            for (int i = 1; i <= 150; ++i)
-                            {
-                                uint pid2 = rng.Next(); // r[i]
-                                var psv = (pid1 ^ pid2) & 0xfff8;
-
-                                if (tsv == psv) // r[i-1]が色違い性格値生成位置
-                                {
-                                    tempRng.Seed = rng.Seed;
-
-                                    // 個体値チェック
-//                                    if (((tempRng.Next() >> 5) & 0b11111) <= 1 // A0
-//                                        && ((tempRng.Next()) & 0b11111) <= 1) // S0
-                                    {
-                                        uint nature = (pid2 << 16 | pid1) % 25;
-
-                                        reverseRng.Seed = rng.Seed; // rngのSeedを与えた逆RNGは、次にr[i-1]を返す
-                                        reverseRng.Next();
-
-                                        // r[i-2]でシンクロ判定or性格ロール、r[i-3]とr[i-2]で一つ前の性格値生成が行われる
-                                        // 性格値生成で同じ性格が出る前に、シンクロ判定か性格ロールに成功したらOK
-                                        bool isOk = false;
-                                        int startPosition = 0;
-                                        for (int a = i - 3; a >= 0; a -= 2)
-                                        {
-                                            uint rand = reverseRng.Next();
-                                            if (rand % 2 == 0) // シンクロ成功
-                                            {
-                                                // OK確定
-                                                isOk = true;
-                                                startPosition = a + 1;
-                                                break;
-                                            }
-                                            else if (rand % 25 == nature) // 性格ロール成功
-                                            {
-                                                // OK確定
-                                                isOk = true;
-                                                startPosition = a + 1;
-                                                break;
-                                            }
-                                            else
-                                            {
-                                                uint targetPid = (rand << 16 | reverseRng.Next());
-                                                if (targetPid % 25 == nature) // 同じ性格が出てしまった
-                                                {
-                                                    // NG確定
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (isOk)
-                                        {
-                                            frameSet.Add(frame);
-                                            if (frameSet.Contains(frame - 2))
-                                            {
-                                                results.Add(initialSeed - 2);
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                pid1 = pid2;
-                            }
-                        }
-                    }
-                }
-            });
-
-            return results;
         }
     }
 }
