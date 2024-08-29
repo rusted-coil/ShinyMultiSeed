@@ -67,8 +67,9 @@ namespace ShinyMultiSeed
             StringBuilder sb = new StringBuilder();
 
             gen4Config.IsHgss = m_Gen4IsHgssCheck.Checked;
+            gen4Config.IsShiny = m_Gen4IsShinyCheck.Checked;
             ValidateAndSetUInt(m_Gen4TidBox, value => gen4Config.Tid = value, sb, "•\ID");
-            ValidateAndSetUInt(m_Gen4TidBox, value => gen4Config.Sid = value, sb, "— ID");
+            ValidateAndSetUInt(m_Gen4SidBox, value => gen4Config.Sid = value, sb, "— ID");
             gen4Config.FiltersAtkIV = m_Gen4FiltersAtkCheck.Checked;
             ValidateAndSetUInt(m_Gen4FiltersAtkIVMinBox, value => gen4Config.AtkIVMin = value, sb, "AŒÂ‘Ì’lMin");
             ValidateAndSetUInt(m_Gen4FiltersAtkIVMaxBox, value => gen4Config.AtkIVMax = value, sb, "AŒÂ‘Ì’lMax");

@@ -14,7 +14,7 @@ namespace ShinyMultiSeed.Calculator.Strategy
         /// <returns></returns>
         public static ISeedCheckStrategy<uint, IGen4SeedCheckResult> CreateGen4SeedCheckStrategy(Gen4SeedCheckStrategyArgs args)
         {
-            return new Internal.Gen4SeedCheckStrategy(args, () => RngFactory.CreateLcgRng(0));
+            return new Internal.Gen4SeedCheckStrategy(args, () => RngFactory.CreateLcgRng(0), () => RngFactory.CreateReverseLcgRng(0));
         }
     }
 }
