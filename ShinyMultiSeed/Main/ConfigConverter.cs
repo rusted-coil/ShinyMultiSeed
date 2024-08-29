@@ -1,5 +1,4 @@
-﻿using ShinyMultiSeed.Calculator;
-using ShinyMultiSeed.Calculator.Strategy;
+﻿using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 
 namespace ShinyMultiSeed.Main

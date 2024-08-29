@@ -66,13 +66,54 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
             int synchroNature = -1;
 
             // mainRngから最初に出てくるのはr[0]
-            // 検索したいのはr[PositionMin]以降に生成される性格値
+            // 検索したいのはr[PositionMin + EncountOffset]以降に生成される個体
 
             // TODO 目当てのポジションまで消費するのは高速化したい
-            for (int i = 0; i < m_PositionMin; ++i)
+            for (int i = 0; i < m_PositionMin + m_EncountOffset; ++i)
             {
                 mainRng.Next();
             }
+
+            uint pidLower = mainRng.Next(); // r[PositionMin + EncountOffset]
+            uint pidUpper = mainRng.Next();
+            uint ivs1 = mainRng.Next();
+            uint ivs2;
+
+            for (uint i = m_PositionMin + m_EncountOffset; i <= m_PositionMax + m_EncountOffset; ++i, pidLower = pidUpper, pidUpper = ivs1, ivs1 = ivs2)
+            { 
+                ivs2 = mainRng.Next();
+
+                // この時点でのpidとivsはr[i]から生成されるもの
+
+
+                bool isPass = true;
+                // 色違い判定
+                if (m_isShiny && m_Tsv != ((pidLower ^ pidUpper) & 0xfff8))
+                {
+                    isPass = false;
+                }
+
+                // 個体値判定
+                if (isPass && (m_FiltersAtkIV || m_FiltersSpdIV))
+                {
+                    var atk = ((ivs1 >> 5) & 0b11111);
+                    if (m_FiltersAtkIV && (atk < m_AtkIVMin || atk > m_AtkIVMax))
+                    {
+                        isPass = false;
+                    }
+                    var spd = (ivs2 & 0b11111);
+                    if (m_FiltersSpdIV && (spd < m_SpdIVMin || spd > m_SpdIVMax))
+                    {
+                        isPass = false;
+                    }
+                }
+
+                if (isPass)
+                {
+                }
+            }
+
+
 
             uint pidLower = mainRng.Next(); // r[PositionMin]
             uint pidUpper = 0;
