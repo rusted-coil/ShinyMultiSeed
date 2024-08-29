@@ -9,6 +9,8 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
         readonly ThreadLocal<ILcgRng> m_TempRng;
         readonly ThreadLocal<ILcgRng> m_ReverseRng;
 
+        readonly ThreadLocal<int[]> m_NatureFlags;
+
         class Result : IGen4SeedCheckResult
         {
             public bool IsPassed { get; init; }
@@ -52,6 +54,7 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
             m_MainRng = new ThreadLocal<ILcgRng>(createLcgRng);
             m_TempRng = new ThreadLocal<ILcgRng>(createLcgRng);
             m_ReverseRng = new ThreadLocal<ILcgRng>(createReverseLcgRng);
+            m_NatureFlags = new ThreadLocal<int[]>(() => new int[50]);
         }
 
         public IGen4SeedCheckResult Check(uint initialSeed)
@@ -79,113 +82,69 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
             uint ivs1 = mainRng.Next();
             uint ivs2;
 
+            for (int i = 0; i < 50; ++i)
+            {
+                m_NatureFlags.Value[i] = -1;
+            }
+
             for (uint i = m_PositionMin + m_EncountOffset; i <= m_PositionMax + m_EncountOffset; ++i, pidLower = pidUpper, pidUpper = ivs1, ivs1 = ivs2)
             { 
                 ivs2 = mainRng.Next();
 
                 // この時点でのpidとivsはr[i]から生成されるもの
 
+                uint nature = (pidUpper << 16 | pidLower) % 25;
 
-                bool isPass = true;
-                // 色違い判定
-                if (m_isShiny && m_Tsv != ((pidLower ^ pidUpper) & 0xfff8))
+                if (m_NatureFlags.Value[nature * 2 + i % 2] >= 0) // 生成できる性格だった
                 {
-                    isPass = false;
-                }
-
-                // 個体値判定
-                if (isPass && (m_FiltersAtkIV || m_FiltersSpdIV))
-                {
-                    var atk = ((ivs1 >> 5) & 0b11111);
-                    if (m_FiltersAtkIV && (atk < m_AtkIVMin || atk > m_AtkIVMax))
+                    bool isPass = true;
+                    // 色違い判定
+                    if (m_isShiny && m_Tsv != ((pidLower ^ pidUpper) & 0xfff8))
                     {
                         isPass = false;
                     }
-                    var spd = (ivs2 & 0b11111);
-                    if (m_FiltersSpdIV && (spd < m_SpdIVMin || spd > m_SpdIVMax))
+
+                    // 個体値判定
+                    if (isPass && (m_FiltersAtkIV || m_FiltersSpdIV))
                     {
-                        isPass = false;
+                        var atk = ((ivs1 >> 5) & 0b11111);
+                        if (m_FiltersAtkIV && (atk < m_AtkIVMin || atk > m_AtkIVMax))
+                        {
+                            isPass = false;
+                        }
+                        var spd = (ivs2 & 0b11111);
+                        if (m_FiltersSpdIV && (spd < m_SpdIVMin || spd > m_SpdIVMax))
+                        {
+                            isPass = false;
+                        }
+                    }
+
+                    if (isPass)
+                    {
+                        // 適合個体だったらNatureFlagにかかれている消費数を出力して終了
+                        isOk = true;
+                        startPosition = (uint)m_NatureFlags.Value[nature * 2 + i % 2];
+                        break;
+                    }
+                    else
+                    {
+                        // 適合していなかったらこの個体の性格フラグを✕に
+                        m_NatureFlags.Value[nature * 2 + i % 2] = -1;
                     }
                 }
 
-                if (isPass)
+                // フラグ更新
+                if (pidLower % 2 == 0) // シンクロに成功したら全てのフラグを◯に
                 {
-                }
-            }
-
-
-
-            uint pidLower = mainRng.Next(); // r[PositionMin]
-            uint pidUpper = 0;
-            for (uint i = m_PositionMin; i <= m_PositionMax; ++i, pidLower = pidUpper)
-            {
-                pidUpper = mainRng.Next(); // r[i+1]
-                                           // このpidは位置iから生成したもの
-
-                // 色違い判定
-                if (m_isShiny && m_Tsv != ((pidLower ^ pidUpper) & 0xfff8))
-                {
-                    continue;
-                }
-
-                // 個体値判定
-                if (m_FiltersAtkIV || m_FiltersSpdIV)
-                {
-                    tempRng.Seed = mainRng.Seed;
-                    var atk = ((tempRng.Next() >> 5) & 0b11111);
-                    if (m_FiltersAtkIV && (atk < m_AtkIVMin || atk > m_AtkIVMax))
+                    for (int n = 0; n < 25; ++n)
                     {
-                        continue;
-                    }
-                    var spd = (tempRng.Next() & 0b11111);
-                    if (m_FiltersSpdIV && (spd < m_SpdIVMin || spd > m_SpdIVMax))
-                    {
-                        continue;
-                    }
-                }
-
-                // この性格値が本当に生成できるかチェック
-                if (m_DeterminesNature)
-                {
-                    uint nature = (pidUpper << 16 | pidLower) % 25;
-
-                    reverseRng.Seed = mainRng.Seed; // mainRngのSeedを与えた逆RNGは、次にr[i]を返す
-                    reverseRng.Next(); // r[i]
-
-                    // r[i-1]でシンクロ判定or性格ロール、r[i-2]とr[i-1]で一つ前の性格値生成が行われる
-                    // 性格値生成で同じ性格が出る前に、シンクロ判定か性格ロールに成功したらOK
-                    for (int a = (int)i - 2; a >= m_EncountOffset; a -= 2)
-                    {
-                        uint rand = reverseRng.Next(); // r[a+1]
-                        if ((m_isHgss && rand % 25 == nature)
-                            || (!m_isHgss && rand / 0xa3e == nature))// 素の性格ロール成功
-                        {
-                            isOk = true;
-                            startPosition = (uint)(a + 1);
-                            synchroNature = -1;
-                        }
-                        else if (m_UsesSynchro
-                            && ((m_isHgss && rand % 2 == 0) || (!m_isHgss && (rand & 0x8000) == 0))) // シンクロ成功
-                        {
-                            isOk = true;
-                            startPosition = (uint)(a + 1);
-                            synchroNature = (int)nature;
-                        }
-
-                        uint targetPid = (rand << 16 | reverseRng.Next()); // r[a]が生成する性格値
-                        if (targetPid % 25 == nature) // 同じ性格が出てしまった
-                        {
-                            // 探索おわり
-                            break;
-                        }
+                        m_NatureFlags.Value[n * 2 + (1 - i % 2)] = (int)i;
                     }
                 }
                 else
                 {
-                    // 性格決定処理を挟まない場合は、iから生成で確定
-                    isOk = true;
-                    startPosition = i;
-                    break;
+                    // 通常の性格ロールフラグだけを◯に
+                    m_NatureFlags.Value[(pidLower % 25) * 2 + (1 - i % 2)] = (int)i;
                 }
             }
 
