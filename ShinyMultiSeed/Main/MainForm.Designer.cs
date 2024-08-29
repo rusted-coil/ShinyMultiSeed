@@ -239,7 +239,7 @@
 			m_Gen4EncountTypeList.DropDownStyle = ComboBoxStyle.DropDownList;
 			m_Gen4EncountTypeList.FormattingEnabled = true;
 			m_Gen4EncountTypeList.Items.AddRange(new object[] { "固定シンボル(シンクロ可)", "徘徊", "野生", "アンノーン(ラジオ有り)" });
-			m_Gen4EncountTypeList.Location = new Point(52, 12);
+			m_Gen4EncountTypeList.Location = new Point(135, 13);
 			m_Gen4EncountTypeList.Name = "m_Gen4EncountTypeList";
 			m_Gen4EncountTypeList.Size = new Size(166, 23);
 			m_Gen4EncountTypeList.TabIndex = 0;
@@ -247,7 +247,7 @@
 			// label8
 			// 
 			label8.AutoSize = true;
-			label8.Location = new Point(12, 15);
+			label8.Location = new Point(95, 16);
 			label8.Name = "label8";
 			label8.Size = new Size(34, 15);
 			label8.TabIndex = 22;
@@ -321,7 +321,7 @@
 			// m_Gen4IsHgssCheck
 			// 
 			m_Gen4IsHgssCheck.AutoSize = true;
-			m_Gen4IsHgssCheck.Location = new Point(233, 14);
+			m_Gen4IsHgssCheck.Location = new Point(24, 15);
 			m_Gen4IsHgssCheck.Name = "m_Gen4IsHgssCheck";
 			m_Gen4IsHgssCheck.Size = new Size(55, 19);
 			m_Gen4IsHgssCheck.TabIndex = 1;
