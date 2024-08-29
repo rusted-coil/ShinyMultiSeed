@@ -6,6 +6,7 @@ using ShinyMultiSeed.Infrastructure;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace ShinyMultiSeed.Main
 {
@@ -39,29 +40,50 @@ namespace ShinyMultiSeed.Main
             m_Disposables.Dispose();
         }
 
+        void ShowError(string message) => MessageBox.Show(message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         void Calculate()
         {
-            // フォームから設定を取得
-            if (!m_MainForm.ReflectToConfig(m_Config, m_Gen4Config, out string reflectConfigError))
+            if (!TryReflectConfig(out string reflectConfigError))
             {
-                MessageBox.Show(reflectConfigError, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(reflectConfigError);
                 return;
             }
 
-            // 現在の状態を保存
+            if (!TrySaveConfig(out string saveConfigError))
+            {
+                ShowError(saveConfigError);
+            }
+
+            ExecuteCalculation();
+        }
+
+        // フォームから設定を取得
+        bool TryReflectConfig(out string errorMessage)
+        {
+            return m_MainForm.ReflectToConfig(m_Config, m_Gen4Config, out errorMessage);
+        }
+
+        // 現在の状態を保存
+        bool TrySaveConfig(out string errorMessage)
+        {
+            StringBuilder sb = new StringBuilder();
             if (!Serializer.Serialize(c_ConfigPath, m_Config, out string configSerializeError))
             {
-                MessageBox.Show($"{c_ConfigPath}の保存に失敗しました。\n----------\n" + configSerializeError, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                sb.AppendLine($"{c_ConfigPath}の保存に失敗しました。\n----------\n" + configSerializeError);
             }
             if (!Serializer.Serialize(c_Gen4ConfigPath, m_Gen4Config, out string gen4ConfigSerializeError))
             {
-                MessageBox.Show($"{c_Gen4ConfigPath}の保存に失敗しました。\n----------\n" + gen4ConfigSerializeError, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                sb.AppendLine($"{c_Gen4ConfigPath}の保存に失敗しました。\n----------\n" + gen4ConfigSerializeError);
             }
+            errorMessage = sb.ToString();
+            return sb.Length == 0;
+        }
 
-            // カリキュレータに渡す引数を生成
+        // 計算を実行して結果を出力
+        void ExecuteCalculation()
+        {
             var args = ConfigConverter.ConvertToGen4SeedCalculatorArgs(m_Config, m_Gen4Config);
-
-            // 計算を実行
             var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(args);
 
             var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
@@ -71,8 +93,13 @@ namespace ShinyMultiSeed.Main
 
             stopwatch.Stop();
 
-            // 結果を出力
-            var sortedResults = calculator.Results.OrderBy(result => result.InitialSeed).ToList();
+            OutputResult(args, calculator.Results, stopwatch.Elapsed.TotalSeconds);
+        }
+
+        // 結果を出力
+        void OutputResult(Gen4SeedCalculatorArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
+        {
+            var sortedResults = results.OrderBy(result => result.InitialSeed).ToList();
             using (var sw = new StreamWriter("output.txt"))
             {
                 var tempRng = RngFactory.CreateLcgRng(0);
@@ -105,7 +132,7 @@ namespace ShinyMultiSeed.Main
             };
             Process.Start(startInfo);
 
-            MessageBox.Show($"処理時間: {stopwatch.Elapsed.TotalSeconds:F2} 秒");
+            MessageBox.Show($"処理時間: {elapsedSeconds:F2} 秒");
         }
     }
 }
