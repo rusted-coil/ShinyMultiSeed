@@ -1,6 +1,7 @@
 ﻿using Gen4RngLib.Individual;
 using Gen4RngLib.Rng;
 using ShinyMultiSeed.Calculator;
+using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 using ShinyMultiSeed.Infrastructure;
 using System.Diagnostics;
@@ -83,21 +84,23 @@ namespace ShinyMultiSeed.Main
         // 計算を実行して結果を出力
         void ExecuteCalculation()
         {
-            var args = ConfigConverter.ConvertToGen4SeedCalculatorArgs(m_Config, m_Gen4Config);
-            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(args);
+            var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_Config, m_Gen4Config);
+            var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
+
+            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, m_Gen4Config.FrameMin, m_Gen4Config.FrameMax, 2);
 
             var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
             stopwatch.Start();
 
-            calculator.CalculateAll(16);
+            var results = calculator.Calculate(16);
 
             stopwatch.Stop();
 
-            OutputResult(args, calculator.Results, stopwatch.Elapsed.TotalSeconds);
+            OutputResult(args, results, stopwatch.Elapsed.TotalSeconds);
         }
 
         // 結果を出力
-        void OutputResult(Gen4SeedCalculatorArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
+        void OutputResult(Gen4SeedCheckStrategyArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
         {
             var sortedResults = results.OrderBy(result => result.InitialSeed).ToList();
             using (var sw = new StreamWriter("output.txt"))

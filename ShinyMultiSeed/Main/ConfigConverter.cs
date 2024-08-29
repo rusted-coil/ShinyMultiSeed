@@ -1,17 +1,16 @@
 ﻿using ShinyMultiSeed.Calculator;
+using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 
 namespace ShinyMultiSeed.Main
 {
     internal static class ConfigConverter
     {
-        public static Gen4SeedCalculatorArgs ConvertToGen4SeedCalculatorArgs(ConfigData config, Gen4Config gen4Config)
+        public static Gen4SeedCheckStrategyArgs ConvertToGen4SeedCheckStrategyArgs(ConfigData config, Gen4Config gen4Config)
         {
-            return new Gen4SeedCalculatorArgs
+            return new Gen4SeedCheckStrategyArgs
             {
                 IsHgss = gen4Config.IsHgss,
-                FrameMin = gen4Config.FrameMin,
-                FrameMax = gen4Config.FrameMax,
                 PositionMin = gen4Config.PositionMin,
                 PositionMax = gen4Config.PositionMax,
                 EncountOffset = 0, // TODO
