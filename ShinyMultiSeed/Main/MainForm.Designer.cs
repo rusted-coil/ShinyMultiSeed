@@ -227,7 +227,7 @@
 			// m_CalculateButton
 			// 
 			m_CalculateButton.BackColor = Color.Yellow;
-			m_CalculateButton.Location = new Point(204, 366);
+			m_CalculateButton.Location = new Point(204, 368);
 			m_CalculateButton.Name = "m_CalculateButton";
 			m_CalculateButton.Size = new Size(113, 31);
 			m_CalculateButton.TabIndex = 5;
