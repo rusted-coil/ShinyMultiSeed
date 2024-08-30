@@ -5,6 +5,7 @@ using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 using ShinyMultiSeed.Infrastructure;
 using System.Diagnostics;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Runtime.Versioning;
 using System.Text;
@@ -43,7 +44,7 @@ namespace ShinyMultiSeed.Main
 
         void ShowError(string message) => MessageBox.Show(message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-        void Calculate()
+        async void Calculate()
         {
             if (!TryReflectConfig(out string reflectConfigError))
             {
@@ -56,7 +57,20 @@ namespace ShinyMultiSeed.Main
                 ShowError(saveConfigError);
             }
 
-            ExecuteCalculation();
+            var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_Config, m_Gen4Config);
+
+            // 前処理
+            m_MainForm.SetIsCalculating(true);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var result = await ExecuteCalculationAsync(args, m_Config.ThreadCount);
+
+            // 後処理
+            stopwatch.Stop();
+            m_MainForm.SetIsCalculating(false);
+
+            OutputResult(args, result, stopwatch.Elapsed.TotalSeconds);
         }
 
         // フォームから設定を取得
@@ -82,21 +96,11 @@ namespace ShinyMultiSeed.Main
         }
 
         // 計算を実行して結果を出力
-        void ExecuteCalculation()
+        async Task<IEnumerable<ISeedCalculatorResult<uint>>> ExecuteCalculationAsync(Gen4SeedCheckStrategyArgs args, int threadCount)
         {
-            var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_Config, m_Gen4Config);
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
-
             var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, m_Gen4Config.FrameMin, m_Gen4Config.FrameMax, 2);
-
-            var stopwatch = new Stopwatch(); // 処理時間測定用のストップウォッチ
-            stopwatch.Start();
-
-            var results = calculator.Calculate(16);
-
-            stopwatch.Stop();
-
-            OutputResult(args, results, stopwatch.Elapsed.TotalSeconds);
+            return await Task.Run(() => calculator.Calculate(threadCount));
         }
 
         // 結果を出力

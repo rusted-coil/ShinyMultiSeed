@@ -90,5 +90,24 @@ namespace ShinyMultiSeed
             errorMessage = string.Empty;
             return true;
         }
+
+        /// <summary>
+        /// 現在計算中かどうかをフォームに反映します。
+        /// </summary>
+        public void SetIsCalculating(bool isCalculating)
+        {
+            if (isCalculating)
+            {
+                m_CalculateButton.Enabled = false;
+                m_CalculateButton.Text = "計算中...";
+                m_CalculateButton.BackColor = Color.LightGray;
+            }
+            else
+            {
+                m_CalculateButton.Enabled = true;
+                m_CalculateButton.Text = "計算";
+                m_CalculateButton.BackColor = Color.Yellow;
+            }            
+        }
     }
 }
