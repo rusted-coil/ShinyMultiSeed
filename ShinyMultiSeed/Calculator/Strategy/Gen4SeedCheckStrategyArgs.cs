@@ -29,5 +29,8 @@
 
         // シンクロを使用するかどうか
         public bool UsesSynchro { get; init; }
+
+        // アンノーンラジオチェック
+        public bool IsUnownRadio { get; init; }
     }
 }

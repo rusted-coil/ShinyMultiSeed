@@ -24,7 +24,8 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				SpdIVMin = 0,
 				SpdIVMax = 1,
 				UsesSynchro = true,
-			};
+                IsUnownRadio = false,
+            };
 
 			var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
 
@@ -64,7 +65,8 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				SpdIVMin = 0,
 				SpdIVMax = 1,
 				UsesSynchro = true,
-			};
+                IsUnownRadio = false,
+            };
 
 			var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
 
@@ -104,7 +106,8 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				SpdIVMin = 0,
 				SpdIVMax = 1,
 				UsesSynchro = true,
-			};
+                IsUnownRadio = false,
+            };
 
 			var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
 
@@ -134,34 +137,31 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				EncountOffset = 1,
 				DeterminesNature = true,
 				PositionMin = 0,
-				PositionMax = 450,
+				PositionMax = 150,
 				IsShiny = true,
 				Tsv = (24485 ^ 59064) & 0xfff8,
-				FiltersAtkIV = true,
+				FiltersAtkIV = false,
 				AtkIVMin = 0,
 				AtkIVMax = 1,
-				FiltersSpdIV = true,
+				FiltersSpdIV = false,
 				SpdIVMin = 0,
 				SpdIVMax = 1,
-				UsesSynchro = true,
+				UsesSynchro = false,
+				IsUnownRadio = true,
 			};
 
 			var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
 
 			{
-				var result = strategy.Check(0x29040AB6u);
+				var result = strategy.Check(0xA10703E6u);
 
-				Assert.AreEqual(result.IsPassed, true);
-				Assert.AreEqual(result.StartPosition, 126u);
-				Assert.AreEqual(result.SynchroNature, 11);
+				Assert.AreEqual(result.IsPassed, false);
 			}
 
 			{
-				var result = strategy.Check(0x29040AB8u);
+				var result = strategy.Check(0xA10703E8u);
 
-				Assert.AreEqual(result.IsPassed, true);
-				Assert.AreEqual(result.StartPosition, 263u);
-				Assert.AreEqual(result.SynchroNature, 8);
+                Assert.AreEqual(result.IsPassed, false);
 			}
 		}
 
@@ -185,6 +185,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
                 SpdIVMin = 0,
                 SpdIVMax = 1,
                 UsesSynchro = true,
+				IsUnownRadio = false,
             };
 
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
@@ -225,6 +226,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				SpdIVMin = 0,
 				SpdIVMax = 1,
 				UsesSynchro = true,
+				IsUnownRadio = false,
 			};
 
 			var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
@@ -266,6 +268,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
                 SpdIVMin = 0,
                 SpdIVMax = 1,
                 UsesSynchro = true,
+				IsUnownRadio = false,
             };
 
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
@@ -297,33 +300,34 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
                 EncountOffset = 1,
                 DeterminesNature = true,
                 PositionMin = 0,
-                PositionMax = 450,
+                PositionMax = 150,
                 IsShiny = true,
                 Tsv = (24485 ^ 59064) & 0xfff8,
-                FiltersAtkIV = true,
+                FiltersAtkIV = false,
                 AtkIVMin = 0,
-                AtkIVMax = 1,
-                FiltersSpdIV = true,
+                AtkIVMax = 31,
+                FiltersSpdIV = false,
                 SpdIVMin = 0,
-                SpdIVMax = 1,
-                UsesSynchro = true,
+                SpdIVMax = 31,
+                UsesSynchro = false,
+                IsUnownRadio = true,
             };
 
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
 
             {
-                var result = strategy.Check(0x29040AB6u);
+                var result = strategy.Check(0xA10703E6u);
 
                 Assert.AreEqual(result.IsPassed, true);
-                Assert.AreEqual(result.StartPosition, 171u);
+                Assert.AreEqual(result.StartPosition, 35u);
                 Assert.AreEqual(result.SynchroNature, -1);
             }
 
             {
-                var result = strategy.Check(0x29040AB8u);
+                var result = strategy.Check(0xA10703E8u);
 
                 Assert.AreEqual(result.IsPassed, true);
-                Assert.AreEqual(result.StartPosition, 292u);
+                Assert.AreEqual(result.StartPosition, 22u);
                 Assert.AreEqual(result.SynchroNature, -1);
             }
         }

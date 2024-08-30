@@ -23,6 +23,7 @@ namespace ShinyMultiSeed.Main
                 SpdIVMin = gen4Config.SpdIVMin,
                 SpdIVMax = gen4Config.SpdIVMax,
                 UsesSynchro = gen4Config.UsesSynchro,
+                IsUnownRadio = gen4Config.EncountType == (int)MainForm.EncountType.Unown,
             };
         }
 

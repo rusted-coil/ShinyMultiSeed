@@ -1,4 +1,5 @@
 ﻿using Gen4RngLib.Rng;
+using Gen4RNGLib.Unown;
 using System.Diagnostics;
 
 namespace ShinyMultiSeed.Calculator.Strategy.Internal
@@ -32,6 +33,7 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
 		readonly uint m_SpdIVMin;
 		readonly uint m_SpdIVMax;
 		readonly bool m_UsesSynchro;
+		readonly bool m_isUnownRadio;
 
 		public Gen4SeedCheckStrategy(Gen4SeedCheckStrategyArgs args, Func<ILcgRng> createLcgRng, Func<ILcgRng> createReverseLcgRng)
 		{
@@ -49,6 +51,7 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
 			m_SpdIVMin = args.SpdIVMin;
 			m_SpdIVMax = args.SpdIVMax;
 			m_UsesSynchro = args.UsesSynchro;
+			m_isUnownRadio = args.IsUnownRadio;
 
 			m_MainRng = new ThreadLocal<ILcgRng>(createLcgRng);
 			m_TempRng = new ThreadLocal<ILcgRng>(createLcgRng);
@@ -91,8 +94,8 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
 					continue;
 				}
 
-				// 個体値判定
-				if (m_FiltersAtkIV || m_FiltersSpdIV)
+				// 個体値判定とアンノーン判定
+				if (m_FiltersAtkIV || m_FiltersSpdIV || m_isUnownRadio)
 				{
 					tempRng.Seed = mainRng.Seed;
 					var atk = ((tempRng.Next() >> 5) & 0b11111);
@@ -104,6 +107,19 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
 					if (m_FiltersSpdIV && (spd < m_SpdIVMin || spd > m_SpdIVMax))
 					{
 						continue;
+					}
+
+					if (m_isUnownRadio)
+					{
+						if (!m_isHgss)
+						{
+							continue;
+						}
+						tempRng.Next();
+						if (!tempRng.CheckRadioEffect())
+						{
+							continue;
+						}
 					}
 				}
 
