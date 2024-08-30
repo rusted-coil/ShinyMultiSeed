@@ -106,6 +106,10 @@ namespace ShinyMultiSeed.Main
         // 結果を出力
         void OutputResult(Gen4SeedCheckStrategyArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
         {
+            var resultViewModels = ResultConverter.ConvertFromGen4Result(results);
+            m_MainForm.SetGen4CalculationResult(elapsedSeconds, resultViewModels.Count, resultViewModels);
+
+            /*
             var sortedResults = results.OrderBy(result => result.InitialSeed).ToList();
             using (var sw = new StreamWriter("output.txt"))
             {
@@ -138,8 +142,7 @@ namespace ShinyMultiSeed.Main
                 CreateNoWindow = true,
             };
             Process.Start(startInfo);
-
-            MessageBox.Show($"処理時間: {elapsedSeconds:F2} 秒");
+            */
         }
     }
 }

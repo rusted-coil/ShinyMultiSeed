@@ -11,8 +11,16 @@ namespace ShinyMultiSeed
         public MainForm(ConfigData config, Gen4Config gen4Config)
         {
             InitializeComponent();
+            InitializeResultView();
             ReflectFromConfig(config, gen4Config);
             CalculateButton = ButtonFactory.CreateButton(m_CalculateButton);
+        }
+
+        void InitializeResultView()
+        {
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "InitialSeed", HeaderText = "初期seed", DataPropertyName = "InitialSeed" });
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "StartPosition", HeaderText = "消費数", DataPropertyName = "StartPosition" });
+            m_Gen4ResultDataGridView.DataSource = m_Gen4ResultBindingSource;
         }
 
         void ReflectFromConfig(ConfigData config, Gen4Config gen4Config)
@@ -108,6 +116,15 @@ namespace ShinyMultiSeed
                 m_CalculateButton.Text = "計算";
                 m_CalculateButton.BackColor = Color.Yellow;
             }            
+        }
+
+        /// <summary>
+        /// 第4世代の計算結果をフォームに反映します。
+        /// </summary>
+        public void SetGen4CalculationResult(double elapsedSeconds, int resultCount, object resultsViewModel)
+        {
+            m_Gen4ResultLabel.Text = $"計算結果: 候補{resultCount}個 (処理時間: {elapsedSeconds:F2} 秒)";
+            m_Gen4ResultBindingSource.DataSource = resultsViewModel;
         }
     }
 }
