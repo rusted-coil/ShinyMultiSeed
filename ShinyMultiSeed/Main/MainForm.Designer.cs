@@ -363,6 +363,7 @@
             // 
             // m_Gen4ResultDataGridView
             // 
+            m_Gen4ResultDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             m_Gen4ResultDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             m_Gen4ResultDataGridView.Location = new Point(368, 39);
             m_Gen4ResultDataGridView.Name = "m_Gen4ResultDataGridView";
