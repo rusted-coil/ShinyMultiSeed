@@ -333,6 +333,7 @@
             m_Gen4IsHgssCheck.TabIndex = 1;
             m_Gen4IsHgssCheck.Text = "HGSS";
             m_Gen4IsHgssCheck.UseVisualStyleBackColor = true;
+            m_Gen4IsHgssCheck.CheckedChanged += m_Gen4IsHgssCheck_CheckedChanged;
             // 
             // groupBox2
             // 

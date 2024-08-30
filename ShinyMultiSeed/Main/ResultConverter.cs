@@ -13,6 +13,9 @@ namespace ShinyMultiSeed.Main
                 {
                     InitialSeed = $"{result.InitialSeed:X8}",
                     StartPosition = result.StartPosition,
+
+                    // TODO 仮
+                    SynchroNature = result.SynchroNature,
                 })
                 .ToArray();
         }

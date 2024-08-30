@@ -6,26 +6,90 @@ namespace ShinyMultiSeed
 {
     public partial class MainForm : Form
     {
+        public enum EncountType
+        {
+            Legendary = 0,
+            Roamer,
+            Wild,
+            Unown,
+        }
+
+        readonly List<KeyValuePair<int, string>> m_Gen4EncountTypes = new List<KeyValuePair<int, string>> {
+            new KeyValuePair<int, string>((int)EncountType.Legendary, "固定シンボル(シンクロ可)"),
+            new KeyValuePair<int, string>((int)EncountType.Roamer, "徘徊"),
+            new KeyValuePair<int, string>((int)EncountType.Wild, "野生"),
+            new KeyValuePair<int, string>((int)EncountType.Unown, "アンノーン(ラジオ有り)"),
+        };
+
         public IButton CalculateButton { get; }
 
         public MainForm(ConfigData config, Gen4Config gen4Config)
         {
             InitializeComponent();
+            InitializeComboBox();
             InitializeResultView();
             ReflectFromConfig(config, gen4Config);
             CalculateButton = ButtonFactory.CreateButton(m_CalculateButton);
+        }
+
+        void InitializeComboBox()
+        {
+            m_Gen4EncountTypeList.DisplayMember = "Value";
+            m_Gen4EncountTypeList.ValueMember = "Key";
+            UpdateGen4EncountTypeList(false);
+        }
+
+        void UpdateGen4EncountTypeList(bool isHgss)
+        {
+            m_Gen4EncountTypeList.Items.Clear();
+            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Legendary]);
+            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Roamer]);
+            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Wild]);
+            if (isHgss) // ラジオ有りアンノーンはHGSSのみ対応
+            {
+                m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Unown]);
+            }
+        }
+
+        void SelectGen4EncountType(int gen4EncountType)
+        {
+            // m_Gen4EncountTypesから、指定されたKeyが一致するアイテムを検索
+            var item = m_Gen4EncountTypeList.Items
+                .Cast<KeyValuePair<int, string>>()
+                .FirstOrDefault(item => item.Key == gen4EncountType);
+            
+            if (!item.Equals(default(KeyValuePair<int, string>)))
+            {
+                m_Gen4EncountTypeList.SelectedItem = item;
+            }
+            else
+            {
+                m_Gen4EncountTypeList.SelectedIndex = 0;
+            }
+        }
+
+        int GetSelectedGen4EncountType()
+        {
+            var currentItem = m_Gen4EncountTypeList.SelectedItem as KeyValuePair<int, string>?;
+            if (currentItem.HasValue)
+            {
+                return currentItem.Value.Key;
+            }
+            return 0;
         }
 
         void InitializeResultView()
         {
             m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "InitialSeed", HeaderText = "初期seed", DataPropertyName = "InitialSeed" });
             m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "StartPosition", HeaderText = "消費数", DataPropertyName = "StartPosition" });
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "SynchroNature", HeaderText = "シンクロ(仮)", DataPropertyName = "SynchroNature" });
             m_Gen4ResultDataGridView.DataSource = m_Gen4ResultBindingSource;
         }
 
         void ReflectFromConfig(ConfigData config, Gen4Config gen4Config)
         {
             m_Gen4IsHgssCheck.Checked = gen4Config.IsHgss;
+            SelectGen4EncountType(gen4Config.EncountType);
             m_Gen4IsShinyCheck.Checked = gen4Config.IsShiny;
             m_Gen4TidBox.Text = gen4Config.Tid.ToString();
             m_Gen4SidBox.Text = gen4Config.Sid.ToString();
@@ -40,6 +104,13 @@ namespace ShinyMultiSeed
             m_Gen4FrameMax.Text = gen4Config.FrameMax.ToString();
             m_Gen4PositionMin.Text = gen4Config.PositionMin.ToString();
             m_Gen4PositionMax.Text = gen4Config.PositionMax.ToString();
+        }
+
+        private void m_Gen4IsHgssCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            var current = GetSelectedGen4EncountType();
+            UpdateGen4EncountTypeList(m_Gen4IsHgssCheck.Checked);
+            SelectGen4EncountType(current);
         }
 
         private void ValidateAndSetUInt(TextBox textBox, Action<uint> setProperty, StringBuilder sb, string fieldName)
@@ -75,6 +146,7 @@ namespace ShinyMultiSeed
             StringBuilder sb = new StringBuilder();
 
             gen4Config.IsHgss = m_Gen4IsHgssCheck.Checked;
+            gen4Config.EncountType = GetSelectedGen4EncountType();
             gen4Config.IsShiny = m_Gen4IsShinyCheck.Checked;
             ValidateAndSetUInt(m_Gen4TidBox, value => gen4Config.Tid = value, sb, "表ID");
             ValidateAndSetUInt(m_Gen4SidBox, value => gen4Config.Sid = value, sb, "裏ID");
@@ -115,7 +187,7 @@ namespace ShinyMultiSeed
                 m_CalculateButton.Enabled = true;
                 m_CalculateButton.Text = "計算";
                 m_CalculateButton.BackColor = Color.Yellow;
-            }            
+            }
         }
 
         /// <summary>

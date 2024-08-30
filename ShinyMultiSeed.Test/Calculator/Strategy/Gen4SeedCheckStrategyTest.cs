@@ -91,7 +91,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 		{
 			var args = new Gen4SeedCheckStrategyArgs {
 				IsHgss = false,
-				EncountOffset = 0,
+				EncountOffset = 1,
 				DeterminesNature = true,
 				PositionMin = 0,
 				PositionMax = 450,
@@ -112,7 +112,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				var result = strategy.Check(0x29040AB6u);
 
 				Assert.AreEqual(result.IsPassed, true);
-				Assert.AreEqual(result.StartPosition, 126u);
+				Assert.AreEqual(result.StartPosition, 125u);
 				Assert.AreEqual(result.SynchroNature, 11);
 			}
 
@@ -120,7 +120,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				var result = strategy.Check(0x29040AB8u);
 
 				Assert.AreEqual(result.IsPassed, true);
-				Assert.AreEqual(result.StartPosition, 263u);
+				Assert.AreEqual(result.StartPosition, 262u);
 				Assert.AreEqual(result.SynchroNature, 8);
 			}
 		}
@@ -131,7 +131,7 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 		{
 			var args = new Gen4SeedCheckStrategyArgs {
 				IsHgss = false,
-				EncountOffset = 0,
+				EncountOffset = 1,
 				DeterminesNature = true,
 				PositionMin = 0,
 				PositionMax = 450,
@@ -245,5 +245,87 @@ namespace ShinyMultiSeed.Test.Calculator.Strategy
 				Assert.AreEqual(result.SynchroNature, -1);
 			}
 		}
-	}
+
+        // HGSSの野生が上手くいくかどうかのテスト
+        [TestMethod]
+        public void Check_HGSSWildKnownSeed_ReturnsExpectedResult()
+        {
+            var args = new Gen4SeedCheckStrategyArgs
+            {
+                IsHgss = true,
+                EncountOffset = 1,
+                DeterminesNature = true,
+                PositionMin = 0,
+                PositionMax = 450,
+                IsShiny = true,
+                Tsv = (24485 ^ 59064) & 0xfff8,
+                FiltersAtkIV = true,
+                AtkIVMin = 0,
+                AtkIVMax = 1,
+                FiltersSpdIV = true,
+                SpdIVMin = 0,
+                SpdIVMax = 1,
+                UsesSynchro = true,
+            };
+
+            var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
+
+            {
+                var result = strategy.Check(0x29040AB6u);
+
+                Assert.AreEqual(result.IsPassed, true);
+                Assert.AreEqual(result.StartPosition, 125u);
+                Assert.AreEqual(result.SynchroNature, 11);
+            }
+
+            {
+                var result = strategy.Check(0x29040AB8u);
+
+                Assert.AreEqual(result.IsPassed, true);
+                Assert.AreEqual(result.StartPosition, 264u);
+                Assert.AreEqual(result.SynchroNature, 8);
+            }
+        }
+
+        // HGSSのアンノーンが上手くいくかどうかのテスト
+        [TestMethod]
+        public void Check_HGSSUnownKnownSeed_ReturnsExpectedResult()
+        {
+            var args = new Gen4SeedCheckStrategyArgs
+            {
+                IsHgss = true,
+                EncountOffset = 1,
+                DeterminesNature = true,
+                PositionMin = 0,
+                PositionMax = 450,
+                IsShiny = true,
+                Tsv = (24485 ^ 59064) & 0xfff8,
+                FiltersAtkIV = true,
+                AtkIVMin = 0,
+                AtkIVMax = 1,
+                FiltersSpdIV = true,
+                SpdIVMin = 0,
+                SpdIVMax = 1,
+                UsesSynchro = true,
+            };
+
+            var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
+
+            {
+                var result = strategy.Check(0x29040AB6u);
+
+                Assert.AreEqual(result.IsPassed, true);
+                Assert.AreEqual(result.StartPosition, 171u);
+                Assert.AreEqual(result.SynchroNature, -1);
+            }
+
+            {
+                var result = strategy.Check(0x29040AB8u);
+
+                Assert.AreEqual(result.IsPassed, true);
+                Assert.AreEqual(result.StartPosition, 292u);
+                Assert.AreEqual(result.SynchroNature, -1);
+            }
+        }
+    }
 }

@@ -6,6 +6,7 @@
     public sealed class Gen4Config
     {
         public bool IsHgss { get; set; } = true;
+        public int EncountType { get; set; } = 0;
         public bool IsShiny { get; set; } = true;
         public uint Tid { get; set; } = 0;
         public uint Sid { get; set; } = 0;
