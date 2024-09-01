@@ -1,18 +1,15 @@
-﻿using Gen4RngLib.Individual;
-using Gen4RngLib.Rng;
-using ShinyMultiSeed.Calculator;
+﻿using ShinyMultiSeed.Calculator;
 using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 using ShinyMultiSeed.Infrastructure;
 using System.Diagnostics;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Runtime.Versioning;
 using System.Text;
 
 namespace ShinyMultiSeed.Main
 {
-    [SupportedOSPlatform("windows")]
+	[SupportedOSPlatform("windows")]
     internal sealed class MainFormPresenter : IDisposable
     {
         const string c_ConfigPath = "config.json";
@@ -29,6 +26,7 @@ namespace ShinyMultiSeed.Main
             m_Gen4Config = Serializer.Deserialize<Gen4Config>(c_Gen4ConfigPath);
             m_MainForm = new MainForm(m_Config, m_Gen4Config);
 
+            m_Disposables.Add(m_MainForm.ThreadCountChanged.Subscribe(threadCount => SetThreadCount(threadCount)));
             m_Disposables.Add(m_MainForm.CalculateButton.Clicked.Subscribe(_ => Calculate()));
         }
 
@@ -44,7 +42,16 @@ namespace ShinyMultiSeed.Main
 
         void ShowError(string message) => MessageBox.Show(message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-        async void Calculate()
+		void SetThreadCount(int threadCount)
+		{
+			m_Config.ThreadCount = threadCount;
+			if (!Serializer.Serialize(c_ConfigPath, m_Config, out string error))
+			{
+				ShowError(error);
+			}
+		}
+
+		async void Calculate()
         {
             if (!TryReflectConfig(out string reflectConfigError))
             {
