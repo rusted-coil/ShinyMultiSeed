@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormRx", "FormRx\FormRx.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gen4RNGLib", "Gen4RNGLib\Gen4RNGLib.csproj", "{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShinyMultiSeed.Test", "ShinyMultiSeed.Test\ShinyMultiSeed.Test.csproj", "{AD377109-82BE-4AF2-B4D3-36F94E569D7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShinyMultiSeed.Test", "ShinyMultiSeed.Test\ShinyMultiSeed.Test.csproj", "{AD377109-82BE-4AF2-B4D3-36F94E569D7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PKHeXUtilLib", "PKHeXUtilLib\PKHeXUtilLib.csproj", "{FB348EA4-127E-4EF6-9D12-B37BD36B5B87}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PKHeXUtilForms", "PKHeXUtilForms\PKHeXUtilForms.csproj", "{95681712-4D17-4B2E-919E-825D192E98B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{AD377109-82BE-4AF2-B4D3-36F94E569D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD377109-82BE-4AF2-B4D3-36F94E569D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD377109-82BE-4AF2-B4D3-36F94E569D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB348EA4-127E-4EF6-9D12-B37BD36B5B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB348EA4-127E-4EF6-9D12-B37BD36B5B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB348EA4-127E-4EF6-9D12-B37BD36B5B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB348EA4-127E-4EF6-9D12-B37BD36B5B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95681712-4D17-4B2E-919E-825D192E98B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95681712-4D17-4B2E-919E-825D192E98B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95681712-4D17-4B2E-919E-825D192E98B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95681712-4D17-4B2E-919E-825D192E98B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
