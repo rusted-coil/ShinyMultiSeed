@@ -19,7 +19,8 @@ namespace ShinyMultiSeed
             var mainForm = new MainForm();
 
             using (var configPresenter = new MainFormConfigPresenter(mainForm, generalConfig, CreateSerializeAction(c_ConfigPath, generalConfig)))
-            using (var gen4Presenter =  new MainFormGen4Presenter(mainForm, generalConfig, gen4Config, CreateSerializeAction(c_Gen4ConfigPath, gen4Config)))
+            using (var resultPresenter = new MainFormResultPresenter(mainForm))
+            using (var gen4Presenter =  new MainFormGen4Presenter(mainForm, resultPresenter, generalConfig, gen4Config, CreateSerializeAction(c_Gen4ConfigPath, gen4Config)))
             {
                 Application.Run(mainForm);
             }

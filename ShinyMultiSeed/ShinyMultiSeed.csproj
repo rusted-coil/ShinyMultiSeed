@@ -13,6 +13,8 @@
   <ItemGroup>
     <ProjectReference Include="..\FormRx\FormRx.csproj" />
     <ProjectReference Include="..\Gen4RNGLib\Gen4RNGLib.csproj" />
+    <ProjectReference Include="..\PKHeXUtilForms\PKHeXUtilForms.csproj" />
+    <ProjectReference Include="..\PKHeXUtilLib\PKHeXUtilLib.csproj" />
   </ItemGroup>
 
 </Project>

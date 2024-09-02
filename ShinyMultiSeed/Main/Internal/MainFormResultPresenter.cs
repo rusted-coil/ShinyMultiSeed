@@ -1,17 +1,25 @@
-﻿using ShinyMultiSeed.Calculator;
-using ShinyMultiSeed.Calculator.Strategy;
-using System.Runtime.Versioning;
+﻿using ShinyMultiSeed.Result;
 
 namespace ShinyMultiSeed.Main.Internal
 {
-    [SupportedOSPlatform("windows")]
-    internal sealed class MainFormPresenter
+    internal sealed class MainFormResultPresenter : IDisposable, IMainFormResultPresenter
     {
-        // 結果を出力
-        void OutputResult(Gen4SeedCheckStrategyArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
-        {
-//            var resultViewModels = ResultConverter.ConvertFromGen4Result(results);
-//            m_MainForm.SetGen4CalculationResult(elapsedSeconds, resultViewModels.Count, resultViewModels);
+        readonly IMainFormResultView m_View;
+
+        public MainFormResultPresenter(IMainFormResultView view)
+        { 
+            m_View = view;
+        }
+
+        public void Dispose()
+        { 
+        }
+
+        public void ShowResult(IResultViewModel viewModel)
+        { 
+            m_View.OverViewText = viewModel.OverViewText;
+            m_View.SetResultColumns(viewModel.Columns);
+            m_View.SetResultRows(viewModel.Rows);
 
             /*
             var sortedResults = results.OrderBy(result => result.InitialSeed).ToList();

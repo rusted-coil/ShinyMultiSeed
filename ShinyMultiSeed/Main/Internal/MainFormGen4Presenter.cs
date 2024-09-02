@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Calculator;
+using ShinyMultiSeed.Result;
 
 namespace ShinyMultiSeed.Main.Internal
 {
@@ -22,14 +23,21 @@ namespace ShinyMultiSeed.Main.Internal
         }
 
         readonly IMainFormGen4View m_View;
+        readonly IMainFormResultPresenter m_ResultPresenter;
         readonly IGeneralConfig m_GeneralConfig;
         readonly IModifiableGen4Config m_Config;
         readonly Func<bool> m_SerializeGen4Config;
         readonly CompositeDisposable m_Disposables = new CompositeDisposable();
 
-        public MainFormGen4Presenter(IMainFormGen4View view, IGeneralConfig generalConfig, IModifiableGen4Config config, Func<bool> serializeGen4Config)
+        public MainFormGen4Presenter(
+            IMainFormGen4View view, 
+            IMainFormResultPresenter resultPresenter,
+            IGeneralConfig generalConfig, 
+            IModifiableGen4Config config,
+            Func<bool> serializeGen4Config)
         {
             m_View = view;
+            m_ResultPresenter = resultPresenter;
             m_GeneralConfig = generalConfig;
             m_Config = config;
             m_SerializeGen4Config = serializeGen4Config;
@@ -111,7 +119,7 @@ namespace ShinyMultiSeed.Main.Internal
             stopwatch.Stop();
             m_View.SetIsCalculating(false);
 
-//            OutputResult(args, result, stopwatch.Elapsed.TotalSeconds);
+            OutputResult(args, result, stopwatch.Elapsed.TotalSeconds);
         }
 
         private void ValidateAndSetUInt(string text, Action<uint> setProperty, StringBuilder sb, string fieldName)
@@ -168,12 +176,58 @@ namespace ShinyMultiSeed.Main.Internal
             return true;
         }
 
-        // 計算を実行して結果を出力
+        // 計算を実行
         async Task<IEnumerable<ISeedCalculatorResult<uint>>> ExecuteCalculationAsync(Gen4SeedCheckStrategyArgs args, int threadCount)
         {
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
             var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, m_Config.FrameMin, m_Config.FrameMax, 2);
             return await Task.Run(() => calculator.Calculate(threadCount));
+        }
+
+        // 結果を出力
+        void OutputResult(Gen4SeedCheckStrategyArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
+        {
+            var resultViewModel = new ResultViewModel { Columns = CreateResultViewModelColumns() };
+            foreach (var result in results.OrderBy(result => result.InitialSeed))
+            {
+                
+            }
+
+            resultViewModel.OverViewText = $"計算結果: 候補{results.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)";
+            m_ResultPresenter.ShowResult(resultViewModel);
+
+        }
+
+        class ResultViewModel : IResultViewModel
+        {
+            public string OverViewText { get; set; } = string.Empty;
+            public IReadOnlyList<IResultColumnViewModel> Columns { get; init; } = Array.Empty<IResultColumnViewModel>();
+            public IReadOnlyList<object> Rows => new ResultRow[] {
+                new ResultRow { InitialSeed = "test", StartPosition = 0, SynchroNature = -1 },
+            };
+        }
+
+        class ResultColumn : IResultColumnViewModel
+        {
+            public string Id { get; init; } = string.Empty;
+            public string DisplayText { get; init; } = string.Empty;
+        }
+
+        class ResultRow
+        {
+            public string? InitialSeed { get; init; }
+            public uint StartPosition { get; init; }
+
+            public int SynchroNature { get; init; }
+        }
+
+        IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns()
+        { 
+            return [
+                new ResultColumn{ Id = "InitialSeed", DisplayText = "初期seed" },
+                new ResultColumn{ Id = "StartPosition", DisplayText = "消費数" },
+                new ResultColumn{ Id = "SynchroNature", DisplayText = "シンクロ" },
+            ];
         }
     }
 }

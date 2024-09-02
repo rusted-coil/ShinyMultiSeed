@@ -1,19 +1,19 @@
 using FormRx.Button;
+using PKHeXUtilForms.Control;
 using ShinyMultiSeed.Main;
+using ShinyMultiSeed.Result;
 using System.Reactive.Subjects;
 
 namespace ShinyMultiSeed
 {
-    internal partial class MainForm : Form, IMainFormGen4View, IMainFormConfigView
+    internal partial class MainForm : Form, IMainFormGen4View, IMainFormConfigView, IMainFormResultView
     {
         public MainForm()
         {
             InitializeComponent();
             InitializeConfigView();
             InitializeGen4View();
-            /*
             InitializeResultView();
-            */
         }
 
 
@@ -147,22 +147,27 @@ namespace ShinyMultiSeed
         }
 
         //----------------------------------------------------------------------------------------------------------
+        // Result
+        //----------------------------------------------------------------------------------------------------------
+
+        public string OverViewText { set => m_Gen4ResultLabel.Text = value; }
 
         void InitializeResultView()
         {
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "InitialSeed", HeaderText = "初期seed", DataPropertyName = "InitialSeed" });
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "StartPosition", HeaderText = "消費数", DataPropertyName = "StartPosition" });
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "SynchroNature", HeaderText = "シンクロ(仮)", DataPropertyName = "SynchroNature" });
-            m_Gen4ResultDataGridView.DataSource = m_Gen4ResultBindingSource;
+            m_ResultDataGridView.DataSource = m_ResultBindingSource;
         }
 
-        /// <summary>
-        /// 第4世代の計算結果をフォームに反映します。
-        /// </summary>
-        public void SetGen4CalculationResult(double elapsedSeconds, int resultCount, object resultsViewModel)
+        public void SetResultColumns(IReadOnlyList<IResultColumnViewModel> columnViewModels)
         {
-            m_Gen4ResultLabel.Text = $"計算結果: 候補{resultCount}個 (処理時間: {elapsedSeconds:F2} 秒)";
-            m_Gen4ResultBindingSource.DataSource = resultsViewModel;
+            foreach (var viewModel in columnViewModels)
+            {
+                m_ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumnEx { Name = viewModel.Id, HeaderText = viewModel.DisplayText, DataPropertyName = viewModel.Id });
+            }
+        }
+
+        public void SetResultRows(IReadOnlyList<object> rowViewModels)
+        {
+            m_ResultBindingSource.DataSource = rowViewModels;
         }
     }
 }

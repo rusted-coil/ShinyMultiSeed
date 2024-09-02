@@ -60,8 +60,8 @@
             m_Gen4IsHgssCheck = new CheckBox();
             groupBox2 = new GroupBox();
             m_Gen4ResultLabel = new Label();
-            m_Gen4ResultDataGridView = new DataGridView();
-            m_Gen4ResultBindingSource = new BindingSource(components);
+            m_ResultDataGridView = new DataGridView();
+            m_ResultBindingSource = new BindingSource(components);
             menuStrip1 = new MenuStrip();
             高速化ToolStripMenuItem = new ToolStripMenuItem();
             スレッド数ToolStripMenuItem = new ToolStripMenuItem();
@@ -78,8 +78,8 @@
             ((System.ComponentModel.ISupportInitialize)m_Gen4MultiSeedCount).BeginInit();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)m_Gen4ResultDataGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)m_Gen4ResultBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)m_ResultDataGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)m_ResultBindingSource).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -371,14 +371,14 @@
             m_Gen4ResultLabel.TabIndex = 23;
             m_Gen4ResultLabel.Text = "結果";
             // 
-            // m_Gen4ResultDataGridView
+            // m_ResultDataGridView
             // 
-            m_Gen4ResultDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            m_Gen4ResultDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            m_Gen4ResultDataGridView.Location = new Point(368, 56);
-            m_Gen4ResultDataGridView.Name = "m_Gen4ResultDataGridView";
-            m_Gen4ResultDataGridView.Size = new Size(451, 403);
-            m_Gen4ResultDataGridView.TabIndex = 24;
+            m_ResultDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            m_ResultDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            m_ResultDataGridView.Location = new Point(368, 56);
+            m_ResultDataGridView.Name = "m_ResultDataGridView";
+            m_ResultDataGridView.Size = new Size(451, 403);
+            m_ResultDataGridView.TabIndex = 24;
             // 
             // menuStrip1
             // 
@@ -451,7 +451,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(831, 471);
-            Controls.Add(m_Gen4ResultDataGridView);
+            Controls.Add(m_ResultDataGridView);
             Controls.Add(m_Gen4ResultLabel);
             Controls.Add(groupBox2);
             Controls.Add(m_Gen4IsHgssCheck);
@@ -474,8 +474,8 @@
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)m_Gen4ResultDataGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)m_Gen4ResultBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)m_ResultDataGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)m_ResultBindingSource).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -515,8 +515,8 @@
         private CheckBox m_Gen4IsHgssCheck;
         private GroupBox groupBox2;
         private Label m_Gen4ResultLabel;
-        private DataGridView m_Gen4ResultDataGridView;
-        private BindingSource m_Gen4ResultBindingSource;
+        private DataGridView m_ResultDataGridView;
+        private BindingSource m_ResultBindingSource;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem 高速化ToolStripMenuItem;
         private ToolStripMenuItem スレッド数ToolStripMenuItem;
