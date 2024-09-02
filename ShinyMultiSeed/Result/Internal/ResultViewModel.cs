@@ -11,5 +11,6 @@
     {
         public string Id { get; init; } = string.Empty;
         public string DisplayText { get; init; } = string.Empty;
+        public int? Width { get; init; } = null;
     }
 }

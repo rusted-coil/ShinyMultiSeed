@@ -88,7 +88,7 @@
             label1.AutoSize = true;
             label1.Location = new Point(12, 399);
             label1.Name = "label1";
-            label1.Size = new Size(121, 15);
+            label1.Size = new Size(122, 15);
             label1.TabIndex = 0;
             label1.Text = "フレームずれ多面待ち数:";
             // 
@@ -377,7 +377,7 @@
             m_ResultDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             m_ResultDataGridView.Location = new Point(368, 56);
             m_ResultDataGridView.Name = "m_ResultDataGridView";
-            m_ResultDataGridView.Size = new Size(451, 403);
+            m_ResultDataGridView.Size = new Size(644, 478);
             m_ResultDataGridView.TabIndex = 24;
             // 
             // menuStrip1
@@ -386,7 +386,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { 高速化ToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(831, 24);
+            menuStrip1.Size = new Size(1024, 24);
             menuStrip1.TabIndex = 25;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -401,48 +401,48 @@
             // 
             スレッド数ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { m_ThreadCountConfig1, m_ThreadCountConfig2, m_ThreadCountConfig4, m_ThreadCountConfig8, m_ThreadCountConfig16, m_ThreadCountConfig32 });
             スレッド数ToolStripMenuItem.Name = "スレッド数ToolStripMenuItem";
-            スレッド数ToolStripMenuItem.Size = new Size(180, 22);
+            スレッド数ToolStripMenuItem.Size = new Size(168, 22);
             スレッド数ToolStripMenuItem.Text = "並列計算スレッド数";
             // 
             // m_ThreadCountConfig1
             // 
             m_ThreadCountConfig1.Name = "m_ThreadCountConfig1";
-            m_ThreadCountConfig1.Size = new Size(180, 22);
+            m_ThreadCountConfig1.Size = new Size(86, 22);
             m_ThreadCountConfig1.Text = "1";
             m_ThreadCountConfig1.Click += ThreadCountConfig1Clicked;
             // 
             // m_ThreadCountConfig2
             // 
             m_ThreadCountConfig2.Name = "m_ThreadCountConfig2";
-            m_ThreadCountConfig2.Size = new Size(180, 22);
+            m_ThreadCountConfig2.Size = new Size(86, 22);
             m_ThreadCountConfig2.Text = "2";
             m_ThreadCountConfig2.Click += ThreadCountConfig2Clicked;
             // 
             // m_ThreadCountConfig4
             // 
             m_ThreadCountConfig4.Name = "m_ThreadCountConfig4";
-            m_ThreadCountConfig4.Size = new Size(180, 22);
+            m_ThreadCountConfig4.Size = new Size(86, 22);
             m_ThreadCountConfig4.Text = "4";
             m_ThreadCountConfig4.Click += ThreadCountConfig4Clicked;
             // 
             // m_ThreadCountConfig8
             // 
             m_ThreadCountConfig8.Name = "m_ThreadCountConfig8";
-            m_ThreadCountConfig8.Size = new Size(180, 22);
+            m_ThreadCountConfig8.Size = new Size(86, 22);
             m_ThreadCountConfig8.Text = "8";
             m_ThreadCountConfig8.Click += ThreadCountConfig8Clicked;
             // 
             // m_ThreadCountConfig16
             // 
             m_ThreadCountConfig16.Name = "m_ThreadCountConfig16";
-            m_ThreadCountConfig16.Size = new Size(180, 22);
+            m_ThreadCountConfig16.Size = new Size(86, 22);
             m_ThreadCountConfig16.Text = "16";
             m_ThreadCountConfig16.Click += ThreadCountConfig16Clicked;
             // 
             // m_ThreadCountConfig32
             // 
             m_ThreadCountConfig32.Name = "m_ThreadCountConfig32";
-            m_ThreadCountConfig32.Size = new Size(180, 22);
+            m_ThreadCountConfig32.Size = new Size(86, 22);
             m_ThreadCountConfig32.Text = "32";
             m_ThreadCountConfig32.Click += ThreadCountConfig32Clicked;
             // 
@@ -450,7 +450,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(831, 471);
+            ClientSize = new Size(1024, 546);
             Controls.Add(m_ResultDataGridView);
             Controls.Add(m_Gen4ResultLabel);
             Controls.Add(groupBox2);

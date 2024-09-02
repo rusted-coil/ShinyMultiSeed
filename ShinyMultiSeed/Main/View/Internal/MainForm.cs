@@ -159,10 +159,11 @@ namespace ShinyMultiSeed
 
         public void SetResultColumns(IReadOnlyList<IResultColumnViewModel> columnViewModels)
         {
+            m_ResultDataGridView.AutoGenerateColumns = false;
             m_ResultDataGridView.Columns.Clear();
             foreach (var viewModel in columnViewModels)
             {
-                m_ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumnEx { Name = viewModel.Id, HeaderText = viewModel.DisplayText, DataPropertyName = viewModel.Id });
+                m_ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumnEx (viewModel.Id, viewModel.DisplayText, viewModel.Width));
             }
         }
 

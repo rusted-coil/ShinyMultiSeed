@@ -2,11 +2,12 @@
 {
     public static class ResultViewModelFactory
     {
-        public static IResultColumnViewModel CreateColumn(string id, string displayText)
+        public static IResultColumnViewModel CreateColumn(string id, string displayText, int? width = null)
         { 
             return new Internal.ResultColumn { 
                 Id = id,
                 DisplayText = displayText,
+                Width = width,
             };
         }
 

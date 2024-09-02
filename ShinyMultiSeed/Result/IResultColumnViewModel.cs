@@ -15,5 +15,11 @@
         /// ヘッダに表示されるテキストを取得します。
         /// </summary>
         string DisplayText { get; }
+
+        /// <summary>
+        /// カラムの幅を取得します。
+        /// <para> * nullの場合、AutoSizeModeがColumnHeaderとなります。</para>
+        /// </summary>
+        int? Width { get; }
     }
 }

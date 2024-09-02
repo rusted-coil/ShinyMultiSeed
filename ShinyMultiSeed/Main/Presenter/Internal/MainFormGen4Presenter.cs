@@ -1,5 +1,9 @@
-﻿using ShinyMultiSeed.Calculator;
+﻿using Gen4RngLib.Individual;
+using Gen4RngLib.Rng;
+using PKHeXUtilLib.Nature;
+using ShinyMultiSeed.Calculator;
 using ShinyMultiSeed.Calculator.Provider;
+using ShinyMultiSeed.Calculator.Strategy;
 using ShinyMultiSeed.Config;
 using ShinyMultiSeed.Main.View;
 using ShinyMultiSeed.Result;
@@ -45,10 +49,10 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
             m_ResultPresenter = resultPresenter;
             m_SerializeGen4Config = serializeGen4Config;
 
+            InitializeView();
+
             m_Disposables.Add(view.IsHgssCheckedChanged.Subscribe(SetSelectableEncountTypes));
             m_Disposables.Add(view.CalculateButton.Clicked.Subscribe(_ => Calculate()));
-
-            InitializeView();
         }
 
         public void Dispose()
@@ -63,6 +67,7 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
 
         void SetSelectableEncountTypes(bool isHgss)
         {
+            int old = m_View.EncountType;
             var list = new List<KeyValuePair<int, string>>()
             {
                 new KeyValuePair<int, string>((int)EncountType.Legendary, "固定シンボル(シンクロ可)"),
@@ -74,12 +79,14 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
                 list.Add(new KeyValuePair<int, string>((int)EncountType.Unown, "アンノーン(ラジオ有り)"));
             }
             m_View.SetSelectableEncountTypes(list);
+            m_View.EncountType = old;
         }
 
         // フォームに設定を反映
         void ReflectConfigToView()
         {
             m_View.IsHgssChecked = m_Config.IsHgss;
+            SetSelectableEncountTypes(m_Config.IsHgss);
             m_View.EncountType = m_Config.EncountType;
             m_View.IsShinyChecked = m_Config.IsShiny;
             m_View.TidText = m_Config.Tid.ToString();
@@ -182,17 +189,49 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
         // 結果を出力
         void OutputResult(IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
         {
-            var columns = CreateResultViewModelColumns();
+            var rng = RngFactory.CreateLcgRng(0);
+            var individual = new Individual();
+            var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_GeneralConfig, m_Config);
+
+            var columns = CreateResultViewModelColumns(m_Config);
             var rows = results
                 .OrderBy(result => result.InitialSeed)
-                .Select(result => {
-                return new ResultRow
+                .Select(result => 
                 {
-                    InitialSeed = result.InitialSeed.ToString("X8"),
-                    StartPosition = result.StartPosition,
-                    SynchroNature = result.SynchroNature,
-                };
-            }).ToArray();
+                    // 個体情報を得るために実際に生成してみる
+                    rng.Seed = result.InitialSeed;
+                    uint lastRand = 0;
+                    for (int i = 0; i < result.StartPosition + args.EncountOffset; ++i)
+                    {
+                        // TODO 目当ての位置まで消費するのは高速化したい
+                        lastRand = rng.Next();
+                    }
+
+                    int wildSlot = (int)(args.IsHgss ? lastRand % 100 : lastRand / 0x290);
+
+                    int nature = -1;
+                    if (args.DeterminesNature)
+                    {
+                        nature = (int)rng.DetermineNature(args.IsHgss ? Gen4RngLib.GameVersion.HGSS : Gen4RngLib.GameVersion.DPt, result.SynchroNature);
+                    }
+                    rng.GenerateIndividual(nature, individual);
+
+                    return new ResultRow
+                    {
+                        InitialSeed = result.InitialSeed.ToString("X8"),
+                        StartPosition = result.StartPosition,
+                        WildSlot = StrategyConst.WildEncountLookUp[wildSlot],
+                        SynchroNature = result.SynchroNature < 0 ? "-" : NatureUtil.GetNatureName(result.SynchroNature, "ja"),
+                        Pid = individual.PID.ToString("X8"),
+                        Nature = NatureUtil.GetNatureName((int)individual.GetNature(), "ja"),
+                        HpIV = individual.HpIV,
+                        AtkIV = individual.AtkIV,
+                        DefIV = individual.DefIV,
+                        SpAtkIV = individual.SpAtkIV,
+                        SpDefIV = individual.SpDefIV,
+                        SpdIV = individual.SpdIV,
+                    };
+                }).ToArray();
             var resultViewModel = ResultViewModelFactory.Create(
                 $"計算結果: 候補{rows.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)",
                 columns, rows);
@@ -203,17 +242,42 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
         {
             public string? InitialSeed { get; init; }
             public uint StartPosition { get; init; }
-
-            public int SynchroNature { get; init; }
+            public uint WildSlot { get; init; }
+            public string? SynchroNature { get; init; }
+            public string? Pid { get; init; }
+            public string? Nature { get; init; }
+            public uint HpIV { get; init; }
+            public uint AtkIV { get; init; }
+            public uint DefIV { get; init; }
+            public uint SpAtkIV { get; init; }
+            public uint SpDefIV { get; init; }
+            public uint SpdIV { get; init; }
         }
 
-        IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns()
+        IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns(IGen4Config gen4Config)
         {
-            return ResultViewModelFactory.CreateColumns(
-                ("InitialSeed", "初期seed"),
-                ("StartPosition", "消費数"),
-                ("SynchroNature", "シンクロ")
-                );
+            var list = new List<IResultColumnViewModel> {
+                ResultViewModelFactory.CreateColumn("InitialSeed", "初期seed", 85),
+                ResultViewModelFactory.CreateColumn("StartPosition", "消費数", 50)
+            };
+            if (gen4Config.EncountType == (int)EncountType.Wild)
+            {
+                list.Add(ResultViewModelFactory.CreateColumn("WildSlot", "野生", 40));
+            }
+            if (gen4Config.UsesSynchro)
+            {
+                list.Add(ResultViewModelFactory.CreateColumn("SynchroNature", "シンクロ", 80));
+            }
+            list.Add(ResultViewModelFactory.CreateColumn("Pid", "性格値", 85));
+            list.Add(ResultViewModelFactory.CreateColumn("Nature", "性格", 80));
+            list.Add(ResultViewModelFactory.CreateColumn("HpIV", "H", 40));
+            list.Add(ResultViewModelFactory.CreateColumn("AtkIV", "A", 40));
+            list.Add(ResultViewModelFactory.CreateColumn("DefIV", "B", 40));
+            list.Add(ResultViewModelFactory.CreateColumn("SpAtkIV", "C", 40));
+            list.Add(ResultViewModelFactory.CreateColumn("SpDefIV", "D", 40));
+            list.Add(ResultViewModelFactory.CreateColumn("SpdIV", "S", 40));
+
+            return list;
         }
     }
 }
