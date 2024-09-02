@@ -1,43 +1,43 @@
 ﻿using FormRx.Button;
 
-namespace ShinyMultiSeed.Main
+namespace ShinyMultiSeed.Main.View
 {
     public interface IMainFormGen4View
-	{
-		/// <summary>
-		/// HGSSのチェックボックスの状態を取得します。
-		/// </summary>
-		bool IsHgssChecked { get; set; }
+    {
+        /// <summary>
+        /// HGSSのチェックボックスの状態を取得します。
+        /// </summary>
+        bool IsHgssChecked { get; set; }
 
-		/// <summary>
-		/// 選択中のエンカウント種別のIndexを取得します。
-		/// </summary>
-		int EncountType { get; set; }
+        /// <summary>
+        /// 選択中のエンカウント種別のIndexを取得します。
+        /// </summary>
+        int EncountType { get; set; }
 
-		/// <summary>
-		/// フィルターの色違いチェックボックスの状態を取得します。
-		/// </summary>
-		bool IsShinyChecked { get; set; }
+        /// <summary>
+        /// フィルターの色違いチェックボックスの状態を取得します。
+        /// </summary>
+        bool IsShinyChecked { get; set; }
 
-		/// <summary>
-		/// 表ID欄に入力されている文字列を取得します。
-		/// </summary>
-		string TidText { get; set; }
+        /// <summary>
+        /// 表ID欄に入力されている文字列を取得します。
+        /// </summary>
+        string TidText { get; set; }
 
         /// <summary>
         /// 裏ID欄に入力されている文字列を取得します。
         /// </summary>
         string SidText { get; set; }
 
-		/// <summary>
-		/// フィルターのA個体値チェックボックスの状態を取得します。
-		/// </summary>
-		bool FiltersAtkIVChecked { get; set; }
+        /// <summary>
+        /// フィルターのA個体値チェックボックスの状態を取得します。
+        /// </summary>
+        bool FiltersAtkIVChecked { get; set; }
 
-		/// <summary>
-		/// A個体値の下限に入力されている値を取得します。
-		/// </summary>
-		decimal AtkIVMinValue { get; set; }
+        /// <summary>
+        /// A個体値の下限に入力されている値を取得します。
+        /// </summary>
+        decimal AtkIVMinValue { get; set; }
 
         /// <summary>
         /// A個体値の上限に入力されている値を取得します。
@@ -100,9 +100,9 @@ namespace ShinyMultiSeed.Main
         /// </summary>
         void SetSelectableEncountTypes(IReadOnlyList<KeyValuePair<int, string>> encountTypes);
 
-		/// <summary>
-		/// 現在計算中かどうかを設定します。
-		/// </summary>
-		void SetIsCalculating(bool isCalculating);
+        /// <summary>
+        /// 現在計算中かどうかを設定します。
+        /// </summary>
+        void SetIsCalculating(bool isCalculating);
     }
 }

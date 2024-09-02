@@ -1,22 +1,23 @@
-﻿using ShinyMultiSeed.Result;
+﻿using ShinyMultiSeed.Main.View;
+using ShinyMultiSeed.Result;
 
-namespace ShinyMultiSeed.Main.Internal
+namespace ShinyMultiSeed.Main.Presenter.Internal
 {
     internal sealed class MainFormResultPresenter : IDisposable, IMainFormResultPresenter
     {
         readonly IMainFormResultView m_View;
 
         public MainFormResultPresenter(IMainFormResultView view)
-        { 
+        {
             m_View = view;
         }
 
         public void Dispose()
-        { 
+        {
         }
 
         public void ShowResult(IResultViewModel viewModel)
-        { 
+        {
             m_View.OverViewText = viewModel.OverViewText;
             m_View.SetResultColumns(viewModel.Columns);
             m_View.SetResultRows(viewModel.Rows);

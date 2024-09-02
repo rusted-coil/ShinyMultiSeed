@@ -1,6 +1,6 @@
-﻿namespace ShinyMultiSeed.Config.Internal
+﻿namespace ShinyMultiSeed.Config
 {
-    internal interface IModifiableGen4Config : IGen4Config
+    public interface IModifiableGen4Config : IGen4Config
     {
         /// <summary>
         /// ゲームがHGSSかどうかを取得/設定します。

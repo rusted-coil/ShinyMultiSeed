@@ -1,6 +1,6 @@
 using FormRx.Button;
 using PKHeXUtilForms.Control;
-using ShinyMultiSeed.Main;
+using ShinyMultiSeed.Main.View;
 using ShinyMultiSeed.Result;
 using System.Reactive.Subjects;
 

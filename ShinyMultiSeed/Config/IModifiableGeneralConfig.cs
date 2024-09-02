@@ -1,6 +1,6 @@
-﻿namespace ShinyMultiSeed.Config.Internal
+﻿namespace ShinyMultiSeed.Config
 {
-    internal interface IModifiableGeneralConfig : IGeneralConfig
+    public interface IModifiableGeneralConfig : IGeneralConfig
     {
         /// <summary>
         /// 並列計算に使用するスレッド数を取得/設定します。

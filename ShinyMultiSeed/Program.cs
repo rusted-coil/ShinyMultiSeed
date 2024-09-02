@@ -1,5 +1,6 @@
+using ShinyMultiSeed.Calculator.Provider;
 using ShinyMultiSeed.Infrastructure;
-using ShinyMultiSeed.Main.Internal;
+using ShinyMultiSeed.Main.Presenter;
 
 namespace ShinyMultiSeed
 {
@@ -18,11 +19,19 @@ namespace ShinyMultiSeed
             ApplicationConfiguration.Initialize();
             var mainForm = new MainForm();
 
-            using (var configPresenter = new MainFormConfigPresenter(mainForm, generalConfig, CreateSerializeAction(c_ConfigPath, generalConfig)))
-            using (var resultPresenter = new MainFormResultPresenter(mainForm))
-            using (var gen4Presenter =  new MainFormGen4Presenter(mainForm, resultPresenter, generalConfig, gen4Config, CreateSerializeAction(c_Gen4ConfigPath, gen4Config)))
+            using (var cofigPresenter = MainFormPresenterFactory.CreateConfigPresenter(generalConfig, mainForm, CreateSerializeAction(c_ConfigPath, generalConfig)))
             {
-                Application.Run(mainForm);
+                var resultPresenter = MainFormPresenterFactory.CreateResultPresenter(mainForm);
+                using (var gen4Presenter = MainFormPresenterFactory.CreateGen4Presenter(
+                    generalConfig,
+                    gen4Config,
+                    SeedCalculatorProviderFactory.CreateGen4SeedCalculatorProvider(),
+                    mainForm,
+                    resultPresenter,
+                    CreateSerializeAction(c_Gen4ConfigPath, gen4Config)))
+                {
+                    Application.Run(mainForm);
+                }
             }
         }
 

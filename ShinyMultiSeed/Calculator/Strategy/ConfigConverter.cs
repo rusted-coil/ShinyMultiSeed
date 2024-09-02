@@ -1,7 +1,7 @@
-﻿using ShinyMultiSeed.Calculator.Strategy;
-using ShinyMultiSeed.Config;
+﻿using ShinyMultiSeed.Config;
+using ShinyMultiSeed.Main.Presenter.Internal;
 
-namespace ShinyMultiSeed.Main.Internal
+namespace ShinyMultiSeed.Calculator.Strategy
 {
     internal static class ConfigConverter
     {

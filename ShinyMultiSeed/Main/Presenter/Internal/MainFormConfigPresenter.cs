@@ -1,24 +1,28 @@
-﻿using ShinyMultiSeed.Config.Internal;
+﻿using ShinyMultiSeed.Config;
+using ShinyMultiSeed.Main.View;
 using System.Reactive.Disposables;
 
-namespace ShinyMultiSeed.Main.Internal
+namespace ShinyMultiSeed.Main.Presenter.Internal
 {
     /// <summary>
     /// MainFormの設定に関わる部分のPresenterです。
     /// </summary>
-    internal sealed class MainFormConfigPresenter : IDisposable
+    internal sealed class MainFormConfigPresenter : IMainFormConfigPresenter
     {
         int[] m_ThreadCounts = [1, 2, 4, 8, 16, 32];
 
-        readonly IMainFormConfigView m_View;
         readonly IModifiableGeneralConfig m_Config;
+        readonly IMainFormConfigView m_View;
         readonly Func<bool> m_SerializeConfig;
         readonly CompositeDisposable m_Disposables = new CompositeDisposable();
 
-        public MainFormConfigPresenter(IMainFormConfigView view, IModifiableGeneralConfig config, Func<bool> serializeConfig)
+        public MainFormConfigPresenter(
+            IModifiableGeneralConfig config,
+            IMainFormConfigView view, 
+            Func<bool> serializeConfig)
         {
-            m_View = view;
             m_Config = config;
+            m_View = view;
             m_SerializeConfig = serializeConfig;
 
             InitializeView();
@@ -26,7 +30,7 @@ namespace ShinyMultiSeed.Main.Internal
             m_Disposables.Add(view.ThreadCountButtonClicked.Subscribe(SetThreadCount));
         }
 
-        public void Dispose() 
+        public void Dispose()
         {
             m_Disposables.Dispose();
         }
@@ -45,7 +49,7 @@ namespace ShinyMultiSeed.Main.Internal
         }
 
         void SetThreadCount(int threadCountIndex)
-        { 
+        {
             m_Config.ThreadCount = m_ThreadCounts[threadCountIndex];
             if (m_SerializeConfig())
             {

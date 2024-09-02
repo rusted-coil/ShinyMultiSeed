@@ -1,18 +1,18 @@
-﻿using ShinyMultiSeed.Config;
-using ShinyMultiSeed.Config.Internal;
+﻿using ShinyMultiSeed.Calculator;
+using ShinyMultiSeed.Calculator.Provider;
+using ShinyMultiSeed.Config;
+using ShinyMultiSeed.Main.View;
+using ShinyMultiSeed.Result;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Text;
-using System.Diagnostics;
-using ShinyMultiSeed.Calculator.Strategy;
-using ShinyMultiSeed.Calculator;
-using ShinyMultiSeed.Result;
 
-namespace ShinyMultiSeed.Main.Internal
+namespace ShinyMultiSeed.Main.Presenter.Internal
 {
     /// <summary>
     /// MainFormの第4世代に関わる部分のPresenterです。
     /// </summary>
-    internal sealed class MainFormGen4Presenter : IDisposable
+    internal sealed class MainFormGen4Presenter : IMainFormGen4Presenter
     {
         public enum EncountType
         {
@@ -22,24 +22,27 @@ namespace ShinyMultiSeed.Main.Internal
             Unown,
         }
 
-        readonly IMainFormGen4View m_View;
-        readonly IMainFormResultPresenter m_ResultPresenter;
         readonly IGeneralConfig m_GeneralConfig;
         readonly IModifiableGen4Config m_Config;
+        readonly IGen4SeedCalculatorProvider m_CalculatorProvider;
+        readonly IMainFormGen4View m_View;
+        readonly IMainFormResultPresenter m_ResultPresenter;
         readonly Func<bool> m_SerializeGen4Config;
         readonly CompositeDisposable m_Disposables = new CompositeDisposable();
 
         public MainFormGen4Presenter(
-            IMainFormGen4View view, 
-            IMainFormResultPresenter resultPresenter,
-            IGeneralConfig generalConfig, 
+            IGeneralConfig generalConfig,
             IModifiableGen4Config config,
+            IGen4SeedCalculatorProvider calculatorProvider,
+            IMainFormGen4View view,
+            IMainFormResultPresenter resultPresenter,
             Func<bool> serializeGen4Config)
         {
-            m_View = view;
-            m_ResultPresenter = resultPresenter;
             m_GeneralConfig = generalConfig;
             m_Config = config;
+            m_CalculatorProvider = calculatorProvider;
+            m_View = view;
+            m_ResultPresenter = resultPresenter;
             m_SerializeGen4Config = serializeGen4Config;
 
             m_Disposables.Add(view.IsHgssCheckedChanged.Subscribe(SetSelectableEncountTypes));
@@ -75,7 +78,7 @@ namespace ShinyMultiSeed.Main.Internal
 
         // フォームに設定を反映
         void ReflectConfigToView()
-        { 
+        {
             m_View.IsHgssChecked = m_Config.IsHgss;
             m_View.EncountType = m_Config.EncountType;
             m_View.IsShinyChecked = m_Config.IsShiny;
@@ -106,20 +109,20 @@ namespace ShinyMultiSeed.Main.Internal
 
             m_SerializeGen4Config();
 
-            var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_GeneralConfig, m_Config);
+            var calculator = m_CalculatorProvider.CreateGen4SeedCalculator(m_GeneralConfig, m_Config);
 
             // 前処理
             m_View.SetIsCalculating(true);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var result = await ExecuteCalculationAsync(args, m_GeneralConfig.ThreadCount);
+            var result = await Task.Run(() => calculator.Calculate(m_GeneralConfig.ThreadCount));
 
             // 後処理
             stopwatch.Stop();
             m_View.SetIsCalculating(false);
 
-            OutputResult(args, result, stopwatch.Elapsed.TotalSeconds);
+            OutputResult(result, stopwatch.Elapsed.TotalSeconds);
         }
 
         private void ValidateAndSetUInt(string text, Action<uint> setProperty, StringBuilder sb, string fieldName)
@@ -176,21 +179,13 @@ namespace ShinyMultiSeed.Main.Internal
             return true;
         }
 
-        // 計算を実行
-        async Task<IEnumerable<ISeedCalculatorResult<uint>>> ExecuteCalculationAsync(Gen4SeedCheckStrategyArgs args, int threadCount)
-        {
-            var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
-            var calculator = SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, m_Config.FrameMin, m_Config.FrameMax, 2);
-            return await Task.Run(() => calculator.Calculate(threadCount));
-        }
-
         // 結果を出力
-        void OutputResult(Gen4SeedCheckStrategyArgs args, IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
+        void OutputResult(IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
         {
             var resultViewModel = new ResultViewModel { Columns = CreateResultViewModelColumns() };
             foreach (var result in results.OrderBy(result => result.InitialSeed))
             {
-                
+
             }
 
             resultViewModel.OverViewText = $"計算結果: 候補{results.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)";
@@ -222,7 +217,7 @@ namespace ShinyMultiSeed.Main.Internal
         }
 
         IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns()
-        { 
+        {
             return [
                 new ResultColumn{ Id = "InitialSeed", DisplayText = "初期seed" },
                 new ResultColumn{ Id = "StartPosition", DisplayText = "消費数" },

@@ -1,6 +1,6 @@
 ﻿using ShinyMultiSeed.Result;
 
-namespace ShinyMultiSeed.Main
+namespace ShinyMultiSeed.Main.View
 {
     public interface IMainFormResultView
     {

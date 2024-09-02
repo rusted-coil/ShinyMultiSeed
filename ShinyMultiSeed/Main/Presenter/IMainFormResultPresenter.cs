@@ -1,8 +1,11 @@
 ﻿using ShinyMultiSeed.Result;
 
-namespace ShinyMultiSeed.Main.Internal
+namespace ShinyMultiSeed.Main.Presenter
 {
-    internal interface IMainFormResultPresenter
+    /// <summary>
+    /// MainFormの結果表示に関する部分のPresenterです。
+    /// </summary>
+    public interface IMainFormResultPresenter
     {
         /// <summary>
         /// ResultViewModelを表示します。
