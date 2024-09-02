@@ -1,7 +1,7 @@
 ﻿using ShinyMultiSeed.Calculator;
 using ShinyMultiSeed.Result;
 
-namespace ShinyMultiSeed.Main
+namespace ShinyMultiSeed.Main.Internal
 {
     internal static class ResultConverter
     {

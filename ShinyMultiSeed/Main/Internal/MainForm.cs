@@ -1,196 +1,130 @@
 using FormRx.Button;
-using ShinyMultiSeed.Config;
 using ShinyMultiSeed.Main;
-using System.Text;
+using System.Reactive.Subjects;
 
 namespace ShinyMultiSeed
 {
-    internal partial class MainForm : Form, IMainForm
+    internal partial class MainForm : Form, IMainFormGen4View, IMainFormConfigView
     {
-        public enum EncountType
-        {
-            Legendary = 0,
-            Roamer,
-            Wild,
-            Unown,
-        }
-
-        readonly List<KeyValuePair<int, string>> m_Gen4EncountTypes = new List<KeyValuePair<int, string>> {
-            new KeyValuePair<int, string>((int)EncountType.Legendary, "固定シンボル(シンクロ可)"),
-            new KeyValuePair<int, string>((int)EncountType.Roamer, "徘徊"),
-            new KeyValuePair<int, string>((int)EncountType.Wild, "野生"),
-            new KeyValuePair<int, string>((int)EncountType.Unown, "アンノーン(ラジオ有り)"),
-        };
-
-        public IButton CalculateButton { get; }
-
-        public IMainFormGen4 MainFormGen4 => throw new NotImplementedException();
-
-        public MainForm(ConfigData config, Gen4Config gen4Config)
+        public MainForm()
         {
             InitializeComponent();
-
-            InitializeMainFormConfig();
-
-            InitializeComboBox();
+            InitializeConfigView();
+            InitializeGen4View();
+            /*
             InitializeResultView();
-            ReflectFromConfig(config, gen4Config);
-            CalculateButton = ButtonFactory.CreateButton(m_CalculateButton);
+            */
         }
 
-        private void m_ThreadCountConfig_Click(object sender, EventArgs e)
+
+        //----------------------------------------------------------------------------------------------------------
+        // ConfigView
+        //----------------------------------------------------------------------------------------------------------
+
+        ToolStripMenuItem[] m_ThreadCountMenuItems;
+
+        Subject<int> m_ThreadCountButtonClicked = new Subject<int>();
+        public IObservable<int> ThreadCountButtonClicked => m_ThreadCountButtonClicked;
+
+        private void ThreadCountConfig1Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(0);
+        private void ThreadCountConfig2Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(1);
+        private void ThreadCountConfig4Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(2);
+        private void ThreadCountConfig8Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(3);
+        private void ThreadCountConfig16Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(4);
+        private void ThreadCountConfig32Clicked(object sender, EventArgs e) => m_ThreadCountButtonClicked.OnNext(5);
+
+        private void InitializeConfigView()
         {
-            var menuItem = sender as ToolStripMenuItem;
-            if (menuItem != null)
+            m_ThreadCountMenuItems = [
+                m_ThreadCountConfig1,
+                m_ThreadCountConfig2,
+                m_ThreadCountConfig4,
+                m_ThreadCountConfig8,
+                m_ThreadCountConfig16,
+                m_ThreadCountConfig32,
+            ];
+        }
+
+        public void SetThreadCountIndex(int index)
+        {
+            for (int i = 0; i < m_ThreadCountMenuItems.Length; ++i)
             {
-                foreach (var pair in m_ThreadCountMenuItems)
+                m_ThreadCountMenuItems[i].Checked = (i == index);
+            }
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // Gen4View
+        //----------------------------------------------------------------------------------------------------------
+
+        bool IMainFormGen4View.IsHgssChecked { get => m_Gen4IsHgssCheck.Checked; set => m_Gen4IsHgssCheck.Checked = value; }
+        int IMainFormGen4View.EncountType {
+            get {
+                var currentItem = m_Gen4EncountTypeList.SelectedItem as KeyValuePair<int, string>?;
+                if (currentItem.HasValue)
                 {
-                    pair.Item1.Checked = (pair.Item1 == menuItem);
-                    if (pair.Item1 == menuItem)
-                    {
-                        m_ThreadCountChanged.OnNext(pair.Item2);
-                    }
+                    return currentItem.Value.Key;
+                }
+                return 0;
+            }
+            set {
+                // m_Gen4EncountTypesから、指定されたKeyが一致するアイテムを検索
+                var item = m_Gen4EncountTypeList.Items
+                    .Cast<KeyValuePair<int, string>>()
+                    .FirstOrDefault(item => item.Key == value);
+
+                if (!item.Equals(default(KeyValuePair<int, string>)))
+                {
+                    m_Gen4EncountTypeList.SelectedItem = item;
+                }
+                else
+                {
+                    m_Gen4EncountTypeList.SelectedIndex = 0;
                 }
             }
         }
-        void InitializeComboBox()
+        bool IMainFormGen4View.IsShinyChecked { get => m_Gen4IsShinyCheck.Checked; set => m_Gen4IsShinyCheck.Checked = value; }
+        string IMainFormGen4View.TidText { get => m_Gen4TidBox.Text; set => m_Gen4TidBox.Text = value; }
+        string IMainFormGen4View.SidText { get => m_Gen4SidBox.Text; set => m_Gen4SidBox.Text = value; }
+        bool IMainFormGen4View.FiltersAtkIVChecked { get => m_Gen4FiltersAtkCheck.Checked; set => m_Gen4FiltersAtkCheck.Checked = value; }
+        decimal IMainFormGen4View.AtkIVMinValue { get => m_Gen4FiltersAtkIVMinBox.Value; set => m_Gen4FiltersAtkIVMinBox.Value = value; }
+        decimal IMainFormGen4View.AtkIVMaxValue { get => m_Gen4FiltersAtkIVMaxBox.Value; set => m_Gen4FiltersAtkIVMaxBox.Value = value; }
+        bool IMainFormGen4View.FiltersSpdIVChecked { get => m_Gen4FiltersSpdCheck.Checked; set => m_Gen4FiltersSpdCheck.Checked = value; }
+        decimal IMainFormGen4View.SpdIVMinValue { get => m_Gen4FiltersSpdIVMinBox.Value; set => m_Gen4FiltersSpdIVMinBox.Value = value; }
+        decimal IMainFormGen4View.SpdIVMaxValue { get => m_Gen4FiltersSpdIVMaxBox.Value; set => m_Gen4FiltersSpdIVMaxBox.Value = value; }
+        bool IMainFormGen4View.UsesSynchroChecked { get => m_Gen4UsesSynchroCheck.Checked; set => m_Gen4UsesSynchroCheck.Checked = value; }
+        string IMainFormGen4View.FrameMinText { get => m_Gen4FrameMin.Text; set => m_Gen4FrameMin.Text = value; }
+        string IMainFormGen4View.FrameMaxText { get => m_Gen4FrameMax.Text; set => m_Gen4FrameMax.Text = value; }
+        string IMainFormGen4View.PositionMinText { get => m_Gen4PositionMin.Text; set => m_Gen4PositionMin.Text = value; }
+        string IMainFormGen4View.PositionMaxText { get => m_Gen4PositionMax.Text; set => m_Gen4PositionMax.Text = value; }
+
+        Subject<bool> m_isHgssCheckedChanged = new Subject<bool>();
+        public IObservable<bool> IsHgssCheckedChanged => m_isHgssCheckedChanged;
+        IButton m_Gen4CalculateButton;
+        IButton IMainFormGen4View.CalculateButton => m_Gen4CalculateButton;
+
+        IReadOnlyList<KeyValuePair<int, string>> m_Gen4EncountTypes;
+
+        private void InitializeGen4View()
         {
             m_Gen4EncountTypeList.DisplayMember = "Value";
             m_Gen4EncountTypeList.ValueMember = "Key";
-            UpdateGen4EncountTypeList(false);
+            m_Gen4CalculateButton = ButtonFactory.CreateButton(m_CalculateButton);
         }
 
-        void UpdateGen4EncountTypeList(bool isHgss)
-        {
-            m_Gen4EncountTypeList.Items.Clear();
-            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Legendary]);
-            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Roamer]);
-            m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Wild]);
-            if (isHgss) // ラジオ有りアンノーンはHGSSのみ対応
-            {
-                m_Gen4EncountTypeList.Items.Add(m_Gen4EncountTypes[(int)EncountType.Unown]);
-            }
-        }
-
-        void SelectGen4EncountType(int gen4EncountType)
-        {
-            // m_Gen4EncountTypesから、指定されたKeyが一致するアイテムを検索
-            var item = m_Gen4EncountTypeList.Items
-                .Cast<KeyValuePair<int, string>>()
-                .FirstOrDefault(item => item.Key == gen4EncountType);
-
-            if (!item.Equals(default(KeyValuePair<int, string>)))
-            {
-                m_Gen4EncountTypeList.SelectedItem = item;
-            }
-            else
-            {
-                m_Gen4EncountTypeList.SelectedIndex = 0;
-            }
-        }
-
-        int GetSelectedGen4EncountType()
-        {
-            var currentItem = m_Gen4EncountTypeList.SelectedItem as KeyValuePair<int, string>?;
-            if (currentItem.HasValue)
-            {
-                return currentItem.Value.Key;
-            }
-            return 0;
-        }
-
-        void InitializeResultView()
-        {
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "InitialSeed", HeaderText = "初期seed", DataPropertyName = "InitialSeed" });
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "StartPosition", HeaderText = "消費数", DataPropertyName = "StartPosition" });
-            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "SynchroNature", HeaderText = "シンクロ(仮)", DataPropertyName = "SynchroNature" });
-            m_Gen4ResultDataGridView.DataSource = m_Gen4ResultBindingSource;
-        }
-
-        void ReflectFromConfig(ConfigData config, Gen4Config gen4Config)
-        {
-            ReflectThreadCount(config.ThreadCount);
-            m_Gen4IsHgssCheck.Checked = gen4Config.IsHgss;
-            SelectGen4EncountType(gen4Config.EncountType);
-            m_Gen4IsShinyCheck.Checked = gen4Config.IsShiny;
-            m_Gen4TidBox.Text = gen4Config.Tid.ToString();
-            m_Gen4SidBox.Text = gen4Config.Sid.ToString();
-            m_Gen4FiltersAtkCheck.Checked = gen4Config.FiltersAtkIV;
-            m_Gen4FiltersAtkIVMinBox.Value = gen4Config.AtkIVMin;
-            m_Gen4FiltersAtkIVMaxBox.Value = gen4Config.AtkIVMax;
-            m_Gen4FiltersSpdCheck.Checked = gen4Config.FiltersSpdIV;
-            m_Gen4FiltersSpdIVMinBox.Value = gen4Config.SpdIVMin;
-            m_Gen4FiltersSpdIVMaxBox.Value = gen4Config.SpdIVMax;
-            m_Gen4UsesSynchroCheck.Checked = gen4Config.UsesSynchro;
-            m_Gen4FrameMin.Text = gen4Config.FrameMin.ToString();
-            m_Gen4FrameMax.Text = gen4Config.FrameMax.ToString();
-            m_Gen4PositionMin.Text = gen4Config.PositionMin.ToString();
-            m_Gen4PositionMax.Text = gen4Config.PositionMax.ToString();
-        }
-
-        private void m_Gen4IsHgssCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            var current = GetSelectedGen4EncountType();
-            UpdateGen4EncountTypeList(m_Gen4IsHgssCheck.Checked);
-            SelectGen4EncountType(current);
-        }
-
-        private void ValidateAndSetUInt(TextBox textBox, Action<uint> setProperty, StringBuilder sb, string fieldName)
-        {
-            if (uint.TryParse(textBox.Text, out uint result))
-            {
-                setProperty(result);
-            }
-            else
-            {
-                sb.AppendLine($"{fieldName}の形式が不正です。: {textBox.Text}");
-            }
-        }
-
-        private void ValidateAndSetUInt(NumericUpDown numericUpDown, Action<uint> setProperty, StringBuilder sb, string fieldName)
-        {
-            if (numericUpDown.Value >= uint.MinValue && numericUpDown.Value <= uint.MaxValue)
-            {
-                setProperty((uint)numericUpDown.Value);
-            }
-            else
-            {
-                sb.AppendLine($"{fieldName}の形式が不正です。: {numericUpDown.Value.ToString()}");
-            }
-        }
+        private void m_Gen4IsHgssCheck_CheckedChanged(object sender, EventArgs e) => m_isHgssCheckedChanged.OnNext(m_Gen4IsHgssCheck.Checked);
 
         /// <summary>
-        /// フォームの状態をコンフィグに反映します。
+        /// 選択可能なエンカウント種別の文字列を設定します。
         /// </summary>
-        /// <returns>成功した場合はtrue、失敗した場合はfalseを返し、errorStringにエラーメッセージを格納します。</returns>
-        public bool ReflectToConfig(ConfigData config, Gen4Config gen4Config, out string errorMessage)
+        void IMainFormGen4View.SetSelectableEncountTypes(IReadOnlyList<KeyValuePair<int, string>> encountTypes)
         {
-            StringBuilder sb = new StringBuilder();
-
-            gen4Config.IsHgss = m_Gen4IsHgssCheck.Checked;
-            gen4Config.EncountType = GetSelectedGen4EncountType();
-            gen4Config.IsShiny = m_Gen4IsShinyCheck.Checked;
-            ValidateAndSetUInt(m_Gen4TidBox, value => gen4Config.Tid = value, sb, "表ID");
-            ValidateAndSetUInt(m_Gen4SidBox, value => gen4Config.Sid = value, sb, "裏ID");
-            gen4Config.FiltersAtkIV = m_Gen4FiltersAtkCheck.Checked;
-            ValidateAndSetUInt(m_Gen4FiltersAtkIVMinBox, value => gen4Config.AtkIVMin = value, sb, "A個体値Min");
-            ValidateAndSetUInt(m_Gen4FiltersAtkIVMaxBox, value => gen4Config.AtkIVMax = value, sb, "A個体値Max");
-            gen4Config.FiltersSpdIV = m_Gen4FiltersSpdCheck.Checked;
-            ValidateAndSetUInt(m_Gen4FiltersSpdIVMinBox, value => gen4Config.SpdIVMin = value, sb, "S個体値Min");
-            ValidateAndSetUInt(m_Gen4FiltersSpdIVMaxBox, value => gen4Config.SpdIVMax = value, sb, "S個体値Max");
-            gen4Config.UsesSynchro = m_Gen4UsesSynchroCheck.Checked;
-            ValidateAndSetUInt(m_Gen4FrameMin, value => gen4Config.FrameMin = value, sb, "フレームMin");
-            ValidateAndSetUInt(m_Gen4FrameMax, value => gen4Config.FrameMax = value, sb, "フレームMax");
-            ValidateAndSetUInt(m_Gen4PositionMin, value => gen4Config.PositionMin = value, sb, "消費数Min");
-            ValidateAndSetUInt(m_Gen4PositionMax, value => gen4Config.PositionMax = value, sb, "消費数Max");
-
-            if (sb.Length > 0)
+            m_Gen4EncountTypes = encountTypes;
+            m_Gen4EncountTypeList.Items.Clear();
+            foreach (var pair in encountTypes)
             {
-                errorMessage = sb.ToString();
-                return false;
+                m_Gen4EncountTypeList.Items.Add(pair);
             }
-            errorMessage = string.Empty;
-            return true;
         }
 
         /// <summary>
@@ -210,6 +144,16 @@ namespace ShinyMultiSeed
                 m_CalculateButton.Text = "計算";
                 m_CalculateButton.BackColor = Color.Yellow;
             }
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        void InitializeResultView()
+        {
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "InitialSeed", HeaderText = "初期seed", DataPropertyName = "InitialSeed" });
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "StartPosition", HeaderText = "消費数", DataPropertyName = "StartPosition" });
+            m_Gen4ResultDataGridView.Columns.Add(new DataGridViewTextBoxColumn { Name = "SynchroNature", HeaderText = "シンクロ(仮)", DataPropertyName = "SynchroNature" });
+            m_Gen4ResultDataGridView.DataSource = m_Gen4ResultBindingSource;
         }
 
         /// <summary>

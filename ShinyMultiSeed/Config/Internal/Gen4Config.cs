@@ -1,9 +1,9 @@
-﻿namespace ShinyMultiSeed.Config
+﻿namespace ShinyMultiSeed.Config.Internal
 {
     /// <summary>
     /// 第4世代の条件設定のフォームデータに対応するコンフィグです。
     /// </summary>
-    public sealed class Gen4Config
+    public sealed class Gen4Config : IModifiableGen4Config
     {
         public bool IsHgss { get; set; } = true;
         public int EncountType { get; set; } = 0;
