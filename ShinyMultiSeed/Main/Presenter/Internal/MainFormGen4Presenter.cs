@@ -182,30 +182,21 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
         // 結果を出力
         void OutputResult(IEnumerable<ISeedCalculatorResult<uint>> results, double elapsedSeconds)
         {
-            var resultViewModel = new ResultViewModel { Columns = CreateResultViewModelColumns() };
-            foreach (var result in results.OrderBy(result => result.InitialSeed))
-            {
-
-            }
-
-            resultViewModel.OverViewText = $"計算結果: 候補{results.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)";
+            var columns = CreateResultViewModelColumns();
+            var rows = results
+                .OrderBy(result => result.InitialSeed)
+                .Select(result => {
+                return new ResultRow
+                {
+                    InitialSeed = result.InitialSeed.ToString("X8"),
+                    StartPosition = result.StartPosition,
+                    SynchroNature = result.SynchroNature,
+                };
+            }).ToArray();
+            var resultViewModel = ResultViewModelFactory.Create(
+                $"計算結果: 候補{rows.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)",
+                columns, rows);
             m_ResultPresenter.ShowResult(resultViewModel);
-
-        }
-
-        class ResultViewModel : IResultViewModel
-        {
-            public string OverViewText { get; set; } = string.Empty;
-            public IReadOnlyList<IResultColumnViewModel> Columns { get; init; } = Array.Empty<IResultColumnViewModel>();
-            public IReadOnlyList<object> Rows => new ResultRow[] {
-                new ResultRow { InitialSeed = "test", StartPosition = 0, SynchroNature = -1 },
-            };
-        }
-
-        class ResultColumn : IResultColumnViewModel
-        {
-            public string Id { get; init; } = string.Empty;
-            public string DisplayText { get; init; } = string.Empty;
         }
 
         class ResultRow
@@ -218,11 +209,11 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
 
         IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns()
         {
-            return [
-                new ResultColumn{ Id = "InitialSeed", DisplayText = "初期seed" },
-                new ResultColumn{ Id = "StartPosition", DisplayText = "消費数" },
-                new ResultColumn{ Id = "SynchroNature", DisplayText = "シンクロ" },
-            ];
+            return ResultViewModelFactory.CreateColumns(
+                ("InitialSeed", "初期seed"),
+                ("StartPosition", "消費数"),
+                ("SynchroNature", "シンクロ")
+                );
         }
     }
 }

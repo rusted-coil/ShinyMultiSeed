@@ -18,7 +18,7 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
 
         public void ShowResult(IResultViewModel viewModel)
         {
-            m_View.OverViewText = viewModel.OverViewText;
+            m_View.OverViewText = viewModel.OverviewText;
             m_View.SetResultColumns(viewModel.Columns);
             m_View.SetResultRows(viewModel.Rows);
 

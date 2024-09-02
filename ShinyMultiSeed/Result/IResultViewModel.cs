@@ -8,7 +8,7 @@
         /// <summary>
         /// 全体の説明テキストを取得します。
         /// </summary>
-        string OverViewText { get; }
+        string OverviewText { get; }
 
         /// <summary>
         /// カラムの情報を取得します。
