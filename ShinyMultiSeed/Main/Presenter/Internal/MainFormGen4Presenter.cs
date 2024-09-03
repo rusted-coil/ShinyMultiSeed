@@ -196,18 +196,14 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
             var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(m_GeneralConfig, m_Config);
 
             var columns = CreateResultViewModelColumns(m_Config);
+
             var rows = results
                 .OrderBy(result => result.InitialSeed)
                 .Select(result => 
                 {
                     // 個体情報を得るために実際に生成してみる
                     rng.Seed = result.InitialSeed;
-                    uint lastRand = 0;
-                    for (int i = 0; i < result.StartPosition + args.EncountOffset; ++i)
-                    {
-                        // TODO 目当ての位置まで消費するのは高速化したい
-                        lastRand = rng.Next();
-                    }
+                    uint lastRand = rng.Advance(result.StartPosition + args.EncountOffset);
 
                     int wildSlot = (int)(args.IsHgss ? lastRand % 100 : lastRand / 0x290);
 

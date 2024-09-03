@@ -98,9 +98,9 @@
             label2.AutoSize = true;
             label2.Location = new Point(12, 34);
             label2.Name = "label2";
-            label2.Size = new Size(125, 15);
+            label2.Size = new Size(44, 15);
             label2.TabIndex = 1;
-            label2.Text = "待機フレーム+(年-2000):";
+            label2.Text = "フレーム:";
             // 
             // m_Gen4IsShinyCheck
             // 
@@ -212,7 +212,7 @@
             // 
             // m_Gen4FrameMin
             // 
-            m_Gen4FrameMin.Location = new Point(149, 31);
+            m_Gen4FrameMin.Location = new Point(65, 31);
             m_Gen4FrameMin.Name = "m_Gen4FrameMin";
             m_Gen4FrameMin.Size = new Size(51, 23);
             m_Gen4FrameMin.TabIndex = 0;
@@ -220,7 +220,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(206, 34);
+            label7.Location = new Point(122, 34);
             label7.Name = "label7";
             label7.Size = new Size(19, 15);
             label7.TabIndex = 17;
@@ -228,7 +228,7 @@
             // 
             // m_Gen4FrameMax
             // 
-            m_Gen4FrameMax.Location = new Point(231, 31);
+            m_Gen4FrameMax.Location = new Point(147, 31);
             m_Gen4FrameMax.Name = "m_Gen4FrameMax";
             m_Gen4FrameMax.Size = new Size(51, 23);
             m_Gen4FrameMax.TabIndex = 1;
@@ -272,7 +272,7 @@
             // 
             // m_Gen4PositionMax
             // 
-            m_Gen4PositionMax.Location = new Point(231, 68);
+            m_Gen4PositionMax.Location = new Point(147, 68);
             m_Gen4PositionMax.Name = "m_Gen4PositionMax";
             m_Gen4PositionMax.Size = new Size(51, 23);
             m_Gen4PositionMax.TabIndex = 3;
@@ -280,7 +280,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new Point(206, 71);
+            label9.Location = new Point(122, 71);
             label9.Name = "label9";
             label9.Size = new Size(19, 15);
             label9.TabIndex = 25;
@@ -288,7 +288,7 @@
             // 
             // m_Gen4PositionMin
             // 
-            m_Gen4PositionMin.Location = new Point(149, 68);
+            m_Gen4PositionMin.Location = new Point(65, 68);
             m_Gen4PositionMin.Name = "m_Gen4PositionMin";
             m_Gen4PositionMin.Size = new Size(51, 23);
             m_Gen4PositionMin.TabIndex = 2;
@@ -298,9 +298,9 @@
             label10.AutoSize = true;
             label10.Location = new Point(11, 71);
             label10.Name = "label10";
-            label10.Size = new Size(106, 15);
+            label10.Size = new Size(46, 15);
             label10.TabIndex = 23;
-            label10.Text = "性格値決定消費数:";
+            label10.Text = "消費数:";
             // 
             // groupBox1
             // 
