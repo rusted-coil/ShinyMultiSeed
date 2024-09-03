@@ -150,10 +150,13 @@ namespace ShinyMultiSeed
         // Result
         //----------------------------------------------------------------------------------------------------------
 
+        public IButton OutputResultButton { get; private set; }
         public string OverViewText { set => m_Gen4ResultLabel.Text = value; }
 
         void InitializeResultView()
         {
+            OutputResultButton = ButtonFactory.CreateButton(m_OutputResultButton);
+            m_OutputResultButton.Enabled = false;
             m_ResultDataGridView.DataSource = m_ResultBindingSource;
         }
 
@@ -169,6 +172,7 @@ namespace ShinyMultiSeed
 
         public void SetResultRows(IReadOnlyList<object> rowViewModels)
         {
+            m_OutputResultButton.Enabled = rowViewModels.Count > 0;
             m_ResultBindingSource.DataSource = rowViewModels;
         }
     }

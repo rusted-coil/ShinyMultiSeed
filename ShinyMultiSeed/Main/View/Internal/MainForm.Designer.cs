@@ -71,6 +71,7 @@
             m_ThreadCountConfig8 = new ToolStripMenuItem();
             m_ThreadCountConfig16 = new ToolStripMenuItem();
             m_ThreadCountConfig32 = new ToolStripMenuItem();
+            m_OutputResultButton = new Button();
             ((System.ComponentModel.ISupportInitialize)m_Gen4FiltersAtkIVMinBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)m_Gen4FiltersAtkIVMaxBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)m_Gen4FiltersSpdIVMaxBox).BeginInit();
@@ -88,7 +89,7 @@
             label1.AutoSize = true;
             label1.Location = new Point(12, 399);
             label1.Name = "label1";
-            label1.Size = new Size(122, 15);
+            label1.Size = new Size(121, 15);
             label1.TabIndex = 0;
             label1.Text = "フレームずれ多面待ち数:";
             // 
@@ -258,7 +259,7 @@
             m_Gen4EncountTypeList.Location = new Point(135, 38);
             m_Gen4EncountTypeList.Name = "m_Gen4EncountTypeList";
             m_Gen4EncountTypeList.Size = new Size(166, 23);
-            m_Gen4EncountTypeList.TabIndex = 0;
+            m_Gen4EncountTypeList.TabIndex = 1;
             // 
             // label8
             // 
@@ -340,7 +341,7 @@
             m_Gen4IsHgssCheck.Location = new Point(24, 40);
             m_Gen4IsHgssCheck.Name = "m_Gen4IsHgssCheck";
             m_Gen4IsHgssCheck.Size = new Size(55, 19);
-            m_Gen4IsHgssCheck.TabIndex = 1;
+            m_Gen4IsHgssCheck.TabIndex = 0;
             m_Gen4IsHgssCheck.Text = "HGSS";
             m_Gen4IsHgssCheck.UseVisualStyleBackColor = true;
             m_Gen4IsHgssCheck.CheckedChanged += m_Gen4IsHgssCheck_CheckedChanged;
@@ -387,7 +388,7 @@
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1024, 24);
-            menuStrip1.TabIndex = 25;
+            menuStrip1.TabIndex = 7;
             menuStrip1.Text = "menuStrip1";
             // 
             // 高速化ToolStripMenuItem
@@ -446,11 +447,22 @@
             m_ThreadCountConfig32.Text = "32";
             m_ThreadCountConfig32.Click += ThreadCountConfig32Clicked;
             // 
+            // m_OutputResultButton
+            // 
+            m_OutputResultButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            m_OutputResultButton.Location = new Point(909, 28);
+            m_OutputResultButton.Name = "m_OutputResultButton";
+            m_OutputResultButton.Size = new Size(103, 23);
+            m_OutputResultButton.TabIndex = 6;
+            m_OutputResultButton.Text = "ファイルに出力";
+            m_OutputResultButton.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1024, 546);
+            Controls.Add(m_OutputResultButton);
             Controls.Add(m_ResultDataGridView);
             Controls.Add(m_Gen4ResultLabel);
             Controls.Add(groupBox2);
@@ -526,5 +538,6 @@
         private ToolStripMenuItem m_ThreadCountConfig8;
         private ToolStripMenuItem m_ThreadCountConfig16;
         private ToolStripMenuItem m_ThreadCountConfig32;
+        private Button m_OutputResultButton;
     }
 }

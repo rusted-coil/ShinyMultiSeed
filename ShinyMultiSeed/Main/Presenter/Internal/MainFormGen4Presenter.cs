@@ -216,7 +216,7 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
                     }
                     rng.GenerateIndividual(nature, individual);
 
-                    return new ResultRow
+                    return new Gen4ResultRowViewModel
                     {
                         InitialSeed = result.InitialSeed.ToString("X8"),
                         StartPosition = result.StartPosition,
@@ -236,22 +236,6 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
                 $"計算結果: 候補{rows.Count()}個 (処理時間: {elapsedSeconds:F2} 秒)",
                 columns, rows);
             m_ResultPresenter.ShowResult(resultViewModel);
-        }
-
-        class ResultRow
-        {
-            public string? InitialSeed { get; init; }
-            public uint StartPosition { get; init; }
-            public uint WildSlot { get; init; }
-            public string? SynchroNature { get; init; }
-            public string? Pid { get; init; }
-            public string? Nature { get; init; }
-            public uint HpIV { get; init; }
-            public uint AtkIV { get; init; }
-            public uint DefIV { get; init; }
-            public uint SpAtkIV { get; init; }
-            public uint SpDefIV { get; init; }
-            public uint SpdIV { get; init; }
         }
 
         IReadOnlyList<IResultColumnViewModel> CreateResultViewModelColumns(IGen4Config gen4Config)

@@ -1,9 +1,15 @@
-﻿using ShinyMultiSeed.Result;
+﻿using FormRx.Button;
+using ShinyMultiSeed.Result;
 
 namespace ShinyMultiSeed.Main.View
 {
     public interface IMainFormResultView
     {
+        /// <summary>
+        /// 「ファイルに出力」ボタンを取得します。
+        /// </summary>
+        IButton OutputResultButton { get; }
+
         /// <summary>
         /// 全体の説明テキストを設定します。
         /// </summary>
