@@ -170,7 +170,7 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
                     for (int a = (int)i - 2; a >= (int)m_PositionMin - 1; a -= 2)
                     {
                         uint rand = reverseRng.Next(); // r[a + EncountOffset + 1]
-						if (a <= m_PositionMax - 1)
+						if (a <= (int)m_PositionMax - 1)
 						{
                             if ((m_isHgss && rand % 25 == nature)
                                 || (!m_isHgss && rand / 0xa3e == nature))// 素の性格ロール成功
@@ -194,6 +194,10 @@ namespace ShinyMultiSeed.Calculator.Strategy.Internal
                             // 探索おわり
                             break;
                         }
+                    }
+                    if (isOk)
+                    {
+                        break;
                     }
                 }
                 else
