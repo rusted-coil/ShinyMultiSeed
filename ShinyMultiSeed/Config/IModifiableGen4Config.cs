@@ -81,5 +81,10 @@
         /// 性格値生成位置の上限を取得/設定します。
         /// </summary>
         new uint PositionMax { get; set; }
+
+        /// <summary>
+        /// 多面待ち候補数を取得/設定します。
+        /// </summary>
+        new uint MultiSeedCount { get; set; }
     }
 }

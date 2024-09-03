@@ -102,6 +102,7 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
             m_View.FrameMaxText = m_Config.FrameMax.ToString();
             m_View.PositionMinText = m_Config.PositionMin.ToString();
             m_View.PositionMaxText = m_Config.PositionMax.ToString();
+            m_View.MultiSeedCount = m_Config.MultiSeedCount;
         }
 
         void ShowError(string message) => MessageBox.Show(message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -176,6 +177,7 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
             ValidateAndSetUInt(m_View.FrameMaxText, value => m_Config.FrameMax = value, sb, "待機フレームMax");
             ValidateAndSetUInt(m_View.PositionMinText, value => m_Config.PositionMin = value, sb, "性格値決定消費数Min");
             ValidateAndSetUInt(m_View.PositionMaxText, value => m_Config.PositionMax = value, sb, "性格値決定消費数Max");
+            ValidateAndSetUInt(m_View.MultiSeedCount, value => m_Config.MultiSeedCount = value, sb, "多面待ち候補数");
 
             if (sb.Length > 0)
             {

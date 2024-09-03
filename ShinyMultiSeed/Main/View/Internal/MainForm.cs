@@ -97,6 +97,7 @@ namespace ShinyMultiSeed
         string IMainFormGen4View.FrameMaxText { get => m_Gen4FrameMax.Text; set => m_Gen4FrameMax.Text = value; }
         string IMainFormGen4View.PositionMinText { get => m_Gen4PositionMin.Text; set => m_Gen4PositionMin.Text = value; }
         string IMainFormGen4View.PositionMaxText { get => m_Gen4PositionMax.Text; set => m_Gen4PositionMax.Text = value; }
+        decimal IMainFormGen4View.MultiSeedCount { get => m_Gen4MultiSeedCount.Value; set => m_Gen4MultiSeedCount.Value = value; }
 
         Subject<bool> m_isHgssCheckedChanged = new Subject<bool>();
         public IObservable<bool> IsHgssCheckedChanged => m_isHgssCheckedChanged;

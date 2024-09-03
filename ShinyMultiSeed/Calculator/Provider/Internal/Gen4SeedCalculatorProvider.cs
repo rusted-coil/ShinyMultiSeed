@@ -9,7 +9,7 @@ namespace ShinyMultiSeed.Calculator.Provider.Internal
         {
             var args = ConfigConverter.ConvertToGen4SeedCheckStrategyArgs(generalConfig, gen4Config);
             var strategy = SeedCheckStrategyFactory.CreateGen4SeedCheckStrategy(args);
-            return SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, gen4Config.FrameMin, gen4Config.FrameMax, 2);
+            return SeedCalculatorFactory.CreateGen4SeedCalculator(strategy, gen4Config.FrameMin, gen4Config.FrameMax, gen4Config.MultiSeedCount);
         }
     }
 }

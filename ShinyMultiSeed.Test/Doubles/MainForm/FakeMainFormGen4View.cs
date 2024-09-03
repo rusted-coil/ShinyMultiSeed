@@ -23,6 +23,7 @@ namespace ShinyMultiSeed.Test.Doubles.MainForm
         public string FrameMaxText { get; set; } = string.Empty;
         public string PositionMinText { get; set; } = string.Empty;
         public string PositionMaxText { get; set; } = string.Empty;
+        public decimal MultiSeedCount { get; set; }
 
         Subject<bool> m_isHgssCheckedChanged = new Subject<bool>();
         public IObservable<bool> IsHgssCheckedChanged => m_isHgssCheckedChanged;

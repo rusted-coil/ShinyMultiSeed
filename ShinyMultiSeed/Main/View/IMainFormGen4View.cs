@@ -85,6 +85,11 @@ namespace ShinyMultiSeed.Main.View
         string PositionMaxText { get; set; }
 
         /// <summary>
+        /// 多面待ち候補数に入力されている値を取得します。
+        /// </summary>
+        decimal MultiSeedCount { get; set; }
+
+        /// <summary>
         /// HGSSかどうかのチェック状態が変わった時に発行されるストリームを取得します。
         /// <para> * チェックされているかどうか。このイベントが発行された時点でIsHgssCheckedの値も同じ値をとります。</para>
         /// </summary>

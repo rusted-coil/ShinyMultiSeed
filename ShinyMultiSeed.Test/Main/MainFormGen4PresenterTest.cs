@@ -32,6 +32,7 @@ namespace ShinyMultiSeed.Test.Main
             stubView.FrameMaxText = "78";
             stubView.PositionMinText = "90";
             stubView.PositionMaxText = "123";
+            stubView.MultiSeedCount = 3;
         }
 
         /// <summary>
@@ -75,6 +76,7 @@ namespace ShinyMultiSeed.Test.Main
                 Assert.AreEqual(mockGen4Config.FrameMax, 78u);
                 Assert.AreEqual(mockGen4Config.PositionMin, 90u);
                 Assert.AreEqual(mockGen4Config.PositionMax, 123u);
+                Assert.AreEqual(mockGen4Config.MultiSeedCount, 3u);
             }
         }
 
@@ -121,6 +123,7 @@ namespace ShinyMultiSeed.Test.Main
                 Assert.AreEqual(mockCalculatorProvider.Gen4Config.FrameMax, 78u);
                 Assert.AreEqual(mockCalculatorProvider.Gen4Config.PositionMin, 90u);
                 Assert.AreEqual(mockCalculatorProvider.Gen4Config.PositionMax, 123u);
+                Assert.AreEqual(mockCalculatorProvider.Gen4Config.MultiSeedCount, 3u);
             }
         }
 

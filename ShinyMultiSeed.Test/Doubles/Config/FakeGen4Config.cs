@@ -20,5 +20,6 @@ namespace ShinyMultiSeed.Test.Doubles.Config
         public uint FrameMax { get; set; }
         public uint PositionMin { get; set; }
         public uint PositionMax { get; set; }
+        public uint MultiSeedCount { get; set; }
     }
 }

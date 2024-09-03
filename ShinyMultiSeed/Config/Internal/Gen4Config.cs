@@ -21,5 +21,6 @@
         public uint FrameMax { get; set; } = 1500;
         public uint PositionMin { get; set; } = 0;
         public uint PositionMax { get; set; } = 150;
+        public uint MultiSeedCount { get; set; } = 2;
     }
 }
