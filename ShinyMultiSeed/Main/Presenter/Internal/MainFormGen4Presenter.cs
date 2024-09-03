@@ -130,7 +130,19 @@ namespace ShinyMultiSeed.Main.Presenter.Internal
             stopwatch.Stop();
             m_View.SetIsCalculating(false);
 
-            OutputResult(result, stopwatch.Elapsed.TotalSeconds);
+            int count = result.Count();
+            if (count > 10000)
+            {
+                DialogResult dialogResult = MessageBox.Show($"候補が多すぎます({count}個)\n結果を全て表示しますか？\n（時間がかかることが予測されます）", "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    OutputResult(result, stopwatch.Elapsed.TotalSeconds);
+                }
+            }
+            else
+            {
+                OutputResult(result, stopwatch.Elapsed.TotalSeconds);
+            }
         }
 
         private void ValidateAndSetUInt(string text, Action<uint> setProperty, StringBuilder sb, string fieldName)
