@@ -1,5 +1,5 @@
 ﻿using Gen4RngLib.Rng;
-using Gen4RNGLib.Unown;
+using Gen4RngLib.Unown;
 using System.Diagnostics;
 
 namespace ShinyMultiSeed.Calculator.Strategy.Internal
