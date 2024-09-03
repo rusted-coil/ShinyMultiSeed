@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShinyMultiSeed", "ShinyMult
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormRx", "FormRx\FormRx.csproj", "{AE627042-0B92-41D7-92E1-6CC25CA1B94D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gen4RNGLib", "Gen4RNGLib\Gen4RNGLib.csproj", "{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gen4RngLib", "Gen4RNGLib\Gen4RngLib.csproj", "{A6E886BB-F3DC-4DBE-9DAF-9DAEDBB5000A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShinyMultiSeed.Test", "ShinyMultiSeed.Test\ShinyMultiSeed.Test.csproj", "{AD377109-82BE-4AF2-B4D3-36F94E569D7B}"
 EndProject

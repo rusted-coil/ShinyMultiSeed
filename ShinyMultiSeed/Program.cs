@@ -1,3 +1,4 @@
+using Gen4RngLib.Rng;
 using ShinyMultiSeed.Calculator.Provider;
 using ShinyMultiSeed.Infrastructure;
 using ShinyMultiSeed.Main.Presenter;
@@ -12,6 +13,10 @@ namespace ShinyMultiSeed
         [STAThread]
         static void Main()
         {
+            // RNG用キャッシュを準備
+            RngFactory.CalculateLcgRngCache();
+            RngFactory.CalculateReverseLcgCache();
+
             // 必要なデータを読み込んでインスタンス保持
             Config.Internal.GeneralConfig generalConfig = Serializer.Deserialize<Config.Internal.GeneralConfig>(c_ConfigPath);
             Config.Internal.Gen4Config gen4Config = Serializer.Deserialize<Config.Internal.Gen4Config>(c_Gen4ConfigPath);
